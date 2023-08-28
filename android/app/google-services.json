@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "920897977766",
+    "project_id": "chargepartners-adminpanel",
+    "storage_bucket": "chargepartners-adminpanel.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:920897977766:android:2ff39d140df7fa03c66367",
+        "android_client_info": {
+          "package_name": "com.cloco.cpdevuser"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "920897977766-fvnqapffikdi7u3m0t5r93hrecqli01l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCk227HSEr78Do6eAWD1ytuscECWWOoqi8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "920897977766-fvnqapffikdi7u3m0t5r93hrecqli01l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
