@@ -81,5 +81,6 @@ class _navPageState extends State<navPage> {
         currentIndex: selected_index,
       ),
     );
+
   }
 }

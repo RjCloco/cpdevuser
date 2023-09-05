@@ -13,7 +13,7 @@ class HexColors extends Color {
 }
 
 class GlobalColors {
-  //IE319D main color
+
   static HexColors OtpBox = HexColors('#D9D9D9');
   static HexColors BtnGreen = HexColors('#00554A');
   static HexColors BtnWhite = HexColors('#FFFFFF');
