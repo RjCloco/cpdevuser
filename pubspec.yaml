@@ -96,6 +96,8 @@ flutter:
     - family: Custom
       fonts:
          - asset: assets/fonts/Custom.ttf
+
+
 #     - family: Schyler
 #       fonts:
 #         - asset: fonts/Schyler-Regular.ttf
