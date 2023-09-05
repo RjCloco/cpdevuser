@@ -18,4 +18,5 @@ class GlobalColors {
   static HexColors BtnGreen = HexColors('#00554A');
   static HexColors BtnWhite = HexColors('#FFFFFF');
   static HexColors ThemeColor = HexColors('#4a635a');
+  static HexColors BottomNavIcon = HexColors('#0B5B55');
 }

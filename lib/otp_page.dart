@@ -1,3 +1,4 @@
+import 'package:cpdevuser/maps.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -136,7 +137,9 @@ class _OtpPageState extends State<OtpPage> {
       Navigator.pop(context);
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => WelcomePage()),
+        MaterialPageRoute(builder: (context) => Map2()),
+        //MaterialPageRoute(builder: (context) => WelcomePage()),
+
       );
     } else {
       showSnackBar("Wrong OTP...", Colors.red);
