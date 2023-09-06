@@ -87,7 +87,6 @@ class _PhoneVerifyState extends State<PhoneVerify> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     var h = MediaQuery.of(context).size.height;
