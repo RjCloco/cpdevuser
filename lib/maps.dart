@@ -1,15 +1,19 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:clippy_flutter/clippy_flutter.dart';
+import 'package:cpdevuser/Provider.dart';
 import 'package:cpdevuser/colors.dart';
+import 'package:cpdevuser/templates/IconList.dart';
+import 'package:cpdevuser/templates/filters.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:provider/provider.dart';
+import 'FilterIcons.dart';
 import 'custom_icons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -139,9 +143,14 @@ class _Map2State extends State<Map2> {
 
   @override
   void dispose() {
+    _controller.future.then((controller) {
+      controller.dispose();
+    });
     _customInfoWindowController.dispose();
     super.dispose();
   }
+
+
 
   @override
   void initState() {
@@ -203,116 +212,7 @@ class _Map2State extends State<Map2> {
           },
           icon: markerIcon,
         ),
-        Marker(
-          markerId: const MarkerId("Fun Mall"),
-          position: funmall,
-          onTap: () {
-            _customInfoWindowController.addInfoWindow!(
-              GestureDetector(
-                onTap: (){
-                  _onMarkerTapped('Fun Mall', 'Mall',11.0247, 77.0106);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            Text(
-                              "Fun Mall",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              "Mall",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    Triangle.isosceles(
-                      edge: Edge.BOTTOM,
-                      child: Container(
-                        color: Colors.green[700],
-                        width: 20.0,
-                        height: 10.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              funmall,
-            );
-          },
-          icon: markerIcon,
-        ),
-        Marker(
-          markerId: const MarkerId("Prozone Mall"),
-          position: prozone,
-          onTap: () {
-            _customInfoWindowController.addInfoWindow!(
-              GestureDetector(
-                onTap: (){
-                  _onMarkerTapped('Prozone Mall', 'Mall',11.0548, 76.9941);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            Text(
-                              "Prozone",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              "Mall",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    Triangle.isosceles(
-                      edge: Edge.BOTTOM,
-                      child: Container(
-                        color: Colors.green[700],
-                        width: 20.0,
-                        height: 10.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              prozone,
-            );
-          },
-          icon: markerIcon,
-        ),
+
       ];
       setState(() {});
     });
@@ -329,21 +229,164 @@ class _Map2State extends State<Map2> {
     );
   }
 
+
   int selectedIconIndex = 0; // 0 for truck, 1 for car, 2 for motorcycle
 
   List<String> texts =
-    [
-      'Fast CCS2',
-      'Slow type 2',
-      'Slow 15A',
-      'Fast DC-001',
-      'fast CHAde',
-      'Slow IEC AC',
-      'Fast type 6',
+  [
+    'Fast CCS2',
+    'Slow type 2',
+    'Slow 15A',
+    'Fast DC-001',
+    'fast CHAde',
+    'Slow IEC AC',
+    'Fast type 6',
   ];
+
+  int icon_selected_index=0;
+
+  Future getData() async{
+    await Future.delayed(
+      const Duration(seconds: 1),
+    );
+    return;
+  }
+
+  // final IconList=[
+  //   twoWheeler(),
+  //   fourWheeler(),
+  //   HeavyVehicle(),
+  // ];
+
+  final IconList=[
+    VehicleIcon(icon: Custom.motorcycle,initialColor: Colors.grey, onTapColor:  Colors.cyanAccent,vehicle_name: 'two wheeler',),
+    VehicleIcon(icon: Custom.car_side,initialColor: Colors.grey, onTapColor:  Colors.blueAccent,vehicle_name: 'four wheeler',),
+    VehicleIcon(icon: Custom.truck,initialColor: Colors.grey, onTapColor:  Colors.orangeAccent,vehicle_name: 'heavy vehicle',)
+  ];
+
+  // List<Widget> filterIconList=[
+  //   FiltersIcon(
+  //     filterName: 'Fast CCS2',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'Slow type 2',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'Slow 15A',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'fast CHAde',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'Fast CCS2',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'Slow IEC AC',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  //   FiltersIcon(
+  //     filterName: 'Fast type 6',
+  //     initialColor: Colors.grey,
+  //     onTapColor: Colors.redAccent,
+  //     onTap: () {
+  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+  //     },
+  //   ),
+  // ];
+
 
   @override
   Widget build(BuildContext context) {
+    final vehicletypeProvider= Provider.of<ProviderClass>(context);
+    List<Widget> filterIconList=[
+      FiltersIcon(
+        filterName: 'Fast CCS2',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'Slow type 2',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'Slow 15A',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'fast CHAde',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'Fast CCS2',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'Slow IEC AC',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+      FiltersIcon(
+        filterName: 'Fast type 6',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
+        onTap: () {
+          print('vehicle type: ${vehicletypeProvider.vehicleType},');
+        },
+      ),
+    ];
+
+
     return WillPopScope(
       onWillPop: () async {
         final shouldPop = await showDialog<bool>(
@@ -420,7 +463,7 @@ class _Map2State extends State<Map2> {
             ? Center(child: CircularProgressIndicator())
             : Stack(
           children: [
-            Positioned.fill(
+            Positioned(
               child: GoogleMap(
                 onMapCreated: (GoogleMapController controller) async {
                   _customInfoWindowController.googleMapController = controller;
@@ -441,160 +484,28 @@ class _Map2State extends State<Map2> {
                 markers: Set<Marker>.from(_otherMarkers),
               ),
             ),
-            // Positioned(
-            //     child:
-            //     Padding(
-            //       padding: const EdgeInsets.all(8.0),
-            //       child: Column(
-            //         children: [
-            //           Row(
-            //             children: [
-            //               Card(
-            //                 child: Container(
-            //                   height: 55,
-            //                   width: 55,
-            //                   child: Icon(Custom.truck),
-            //                 ),
-            //               ),
-            //               Container(
-            //                 height: 60,
-            //                 width: MediaQuery.of(context).size.width - 90, // Adjust the width as needed
-            //                 child: SingleChildScrollView(
-            //                   physics: ScrollPhysics(),
-            //                   scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-            //                   child:
-            //                   ListView.builder(
-            //                     scrollDirection: Axis.horizontal, // Set the inner ListView to scroll horizontally
-            //                     shrinkWrap: true,
-            //                     itemCount: 7,
-            //                     itemBuilder: (context, index) {
-            //                       // List of texts to display in the containers
-            //                       List<String> texts = [
-            //                         'Fast CCS2',
-            //                         'Slow type 2',
-            //                         'Slow 15A',
-            //                         'Fast DC-001',
-            //                         'fast CHAde',
-            //                         'Slow IEC AC',
-            //                         'Fast type 6',
-            //                       ];
-            //                       return Padding(
-            //                         padding: const EdgeInsets.all(8.0), // spacing between items
-            //                         child: Card(
-            //                           child: Container(
-            //                             height: 55,
-            //                             width: 55,
-            //                             child: Text(texts[index], style: TextStyle(fontSize: 12)),
-            //                           ),
-            //                         ),
-            //                       );
-            //                     },
-            //                   ),
-            //                 ),
-            //               ),
+            // Container(
             //
-            //             ],
+            //   child: ListView.builder(
+            //     scrollDirection: Axis.horizontal,
+            //     shrinkWrap: true,
+            //     itemCount: texts.length,
+            //     itemBuilder: (context, index) {
+            //       return Padding(
+            //         padding: const EdgeInsets.all(8.0),
+            //         child: Card(
+            //           child: Container(
+            //             height: 55,
+            //             width: 55,
+            //             child: Text(
+            //               texts[index],
+            //               style: TextStyle(fontSize: 12),
+            //             ),
             //           ),
-            //           Row(
-            //             children: [
-            //               Card(
-            //                 child: Container(
-            //                   height: 55,
-            //                   width: 55,
-            //                   child: Icon(Custom.car_side),
-            //                 ),
-            //               ),
-            //               Container(
-            //                 height: 60,
-            //                 width: MediaQuery.of(context).size.width - 90, // Adjust the width as needed
-            //                 child: SingleChildScrollView(
-            //                   physics: ScrollPhysics(),
-            //                   scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-            //                   child:
-            //                   ListView.builder(
-            //                     scrollDirection: Axis.horizontal, // Set the inner ListView to scroll horizontally
-            //                     shrinkWrap: true,
-            //                     itemCount: 7,
-            //                     itemBuilder: (context, index) {
-            //                       // List of texts to display in the containers
-            //                       List<String> texts = [
-            //                         'Fast CCS2',
-            //                         'Slow type 2',
-            //                         'Slow 15A',
-            //                         'Fast DC-001',
-            //                         'fast CHAde',
-            //                         'Slow IEC AC',
-            //                         'Fast type 6',
-            //                       ];
-            //                       return Padding(
-            //                         padding: const EdgeInsets.all(8.0), // spacing between items
-            //                         child: Card(
-            //                           child: Container(
-            //                             height: 55,
-            //                             width: 55,
-            //                             child: Text(texts[index], style: TextStyle(fontSize: 12)),
-            //                           ),
-            //                         ),
-            //                       );
-            //                     },
-            //                   ),
-            //                 ),
-            //               ),
-            //
-            //             ],
-            //           ),
-            //           Row(
-            //             children: [
-            //               Card(
-            //                 child: Container(
-            //                   height: 55,
-            //                   width: 55,
-            //                   child: Icon(Custom.motorcycle),
-            //                 ),
-            //               ),
-            //               Container(
-            //                 height: 60,
-            //                 width: MediaQuery.of(context).size.width - 90, // Adjust the width as needed
-            //                 child: SingleChildScrollView(
-            //                   physics: ScrollPhysics(),
-            //                   scrollDirection: Axis.horizontal, // Set the scroll direction to horizontal
-            //                   child:
-            //                   ListView.builder(
-            //                     scrollDirection: Axis.horizontal, // Set the inner ListView to scroll horizontally
-            //                     shrinkWrap: true,
-            //                     itemCount: 7,
-            //                     itemBuilder: (context, index) {
-            //                       // List of texts to display in the containers
-            //                       List<String> texts = [
-            //                         'Fast CCS2',
-            //                         'Slow type 2',
-            //                         'Slow 15A',
-            //                         'Fast DC-001',
-            //                         'fast CHAde',
-            //                         'Slow IEC AC',
-            //                         'Fast type 6',
-            //                       ];
-            //                       return Padding(
-            //                         padding: const EdgeInsets.all(8.0), // spacing between items
-            //                         child: Card(
-            //                           child: Container(
-            //                             height: 55,
-            //                             width: 55,
-            //                             child: Text(texts[index], style: TextStyle(fontSize: 12)),
-            //                           ),
-            //                         ),
-            //                       );
-            //                     },
-            //                   ),
-            //                 ),
-            //               ),
-            //
-            //             ],
-            //           ),
-            //         ],
-            //       ),
-            //     )
-            //
+            //         ),
+            //       );
+            //     },
+            //   ),
             // ),
             Positioned(
               child: Padding(
@@ -666,37 +577,37 @@ class _Map2State extends State<Map2> {
                             ),
                           ),
                         ),
-                        Container(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width - 90,
-                          child: SingleChildScrollView(
-                            physics: ScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            child: Visibility(
-                              visible: selectedIconIndex == 1,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: texts.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      child: Container(
-                                        height: 55,
-                                        width: 55,
-                                        child: Text(
-                                          texts[index],
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   height: 60,
+                        //   width: MediaQuery.of(context).size.width - 90,
+                        //   child: SingleChildScrollView(
+                        //     physics: ScrollPhysics(),
+                        //     scrollDirection: Axis.horizontal,
+                        //     child: Visibility(
+                        //       visible: selectedIconIndex == 1,
+                        //       child: ListView.builder(
+                        //         scrollDirection: Axis.horizontal,
+                        //         shrinkWrap: true,
+                        //         itemCount: texts.length,
+                        //         itemBuilder: (context, index) {
+                        //           return Padding(
+                        //             padding: const EdgeInsets.all(8.0),
+                        //             child: Card(
+                        //               child: Container(
+                        //                 height: 55,
+                        //                 width: 55,
+                        //                 child: Text(
+                        //                   texts[index],
+                        //                   style: TextStyle(fontSize: 12),
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //           );
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                     Row(
@@ -715,45 +626,44 @@ class _Map2State extends State<Map2> {
                             ),
                           ),
                         ),
-                        Container(
-                          height: 60,
-                          width: MediaQuery.of(context).size.width - 90,
-                          child: SingleChildScrollView(
-                            physics: ScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            child: Visibility(
-                              visible: selectedIconIndex == 2,
-                              child: ListView.builder(
-                                scrollDirection: Axis.horizontal,
-                                shrinkWrap: true,
-                                itemCount: texts.length,
-                                itemBuilder: (context, index) {
-                                  return Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Card(
-                                      child: Container(
-                                        height: 55,
-                                        width: 55,
-                                        child: Text(
-                                          texts[index],
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
+                        // Container(
+                        //   height: 60,
+                        //   width: MediaQuery.of(context).size.width - 90,
+                        //   child: SingleChildScrollView(
+                        //     physics: ScrollPhysics(),
+                        //     scrollDirection: Axis.horizontal,
+                        //     child: Visibility(
+                        //       visible: selectedIconIndex == 2,
+                        //       child: ListView.builder(
+                        //         scrollDirection: Axis.horizontal,
+                        //         shrinkWrap: true,
+                        //         itemCount: texts.length,
+                        //         itemBuilder: (context, index) {
+                        //           return Padding(
+                        //             padding: const EdgeInsets.all(8.0),
+                        //             child: Card(
+                        //               child: Container(
+                        //                 height: 55,
+                        //                 width: 55,
+                        //                 child: Text(
+                        //                   texts[index],
+                        //                   style: TextStyle(fontSize: 12),
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //           );
+                        //         },
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ],
                 ),
               ),
             ),
-
-           Align(
+            Align(
               alignment: Alignment.bottomCenter,
               child: SlidingUpPanel(
                 minHeight: 220, // Minimum height of the panel
@@ -910,11 +820,15 @@ class _Map2State extends State<Map2> {
                 ),
               ),
             ),
-            CustomInfoWindow(
-              controller: _customInfoWindowController,
-              height: 75,
-              width: 150,
-              offset: 50,
+            Container(
+              height: 100,
+              width: 200,
+              child: CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 100, // Set an appropriate height
+                width: 200,  // Set an appropriate width
+                offset: 50,
+              ),
             ),
           ],
         ),
@@ -968,6 +882,27 @@ class MarkerDetailsPage extends StatelessWidget {
   }
 }
 
+
+// Positioned(
+//     child: FutureBuilder(
+//       future: getData(),
+//       builder: (context,snapshot){
+//         if(snapshot.connectionState==ConnectionState.waiting){
+//           return CircularProgressIndicator();
+//         }
+//         else if(snapshot.hasError){
+//           return Text(snapshot.error.toString());
+//         }
+//         else{
+//           // return IconList[icon_selected_index];
+//           return Column(
+//             children: IconList,
+//           );
+//         }
+//       },
+//
+//     ),
+// ),
 
 
 // Positioned(
