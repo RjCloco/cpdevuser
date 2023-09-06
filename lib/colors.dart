@@ -19,4 +19,11 @@ class GlobalColors {
   static HexColors BtnWhite = HexColors('#FFFFFF');
   static HexColors ThemeColor = HexColors('#4a635a');
   static HexColors BottomNavIcon = HexColors('#0B5B55');
+  static Color color1 = const Color(0xFF04AD95);
+  static Color color2 = const Color(0xFF0B5B55);
+  static Color color3 = const Color(0xFF060606);
+  static Color color4 = const Color(0xFFFFFFFF);
+  static Color color5 = const Color(0xFF012D27);
+  static Color color6 = const Color(0xFF04AD95);
+  static Color color7 = const Color(0xFFE8ECF4);
 }
