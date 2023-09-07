@@ -9,14 +9,7 @@ class Notify extends StatefulWidget {
 }
 
 class _NotifyState extends State<Notify> {
-  final List<String> notifications = [
-    'Charge Partners',
-    'Charge Partners',
-    'Charge Partners',
-    'Charge Partners',
-    'Charge Partners',
-    'Charge Partners',
-  ];
+  List<String> notifications = [];
   final List<String> message = [];
   final List<DateTime> time = [];
   final List<String> name = [
@@ -52,6 +45,9 @@ class _NotifyState extends State<Notify> {
         time.clear();
         message.addAll(notificationMessages);
         time.addAll(notificationTimes);
+
+        // Initialize the notifications list based on the number of messages
+        notifications = List<String>.generate(message.length, (index) => 'Charge Partners');
       });
     } catch (e) {
       print('Error fetching notifications: $e');
@@ -107,7 +103,9 @@ class _NotifyState extends State<Notify> {
                 ),
               ],
             ),
-            SizedBox(height: 10.0,),
+            SizedBox(
+              height: 10.0,
+            ),
             Expanded(
               child: ListView.builder(
                 itemCount: message.length,
@@ -115,7 +113,7 @@ class _NotifyState extends State<Notify> {
                   return Card(
                     elevation: 0.0,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0), // Adjust the radius as needed
+                      borderRadius: BorderRadius.circular(15.0),
                     ),
                     child: Container(
                       decoration: const BoxDecoration(
@@ -123,81 +121,83 @@ class _NotifyState extends State<Notify> {
                         borderRadius: BorderRadius.all(Radius.circular(15.0)),
                       ),
                       child: ListTile(
-                          title:Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 10.0, left: 0.0),
-                                          child: Container(
-                                            decoration: BoxDecoration(
-                                              color: Colors.green,
-                                            ),
-                                            child: Image.asset(
-                                              "assets/flash.png",
-                                              height: 15,
-                                              width: 15,
-                                            ),
+                        title: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(
+                                            top: 10.0, left: 0.0),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.green,
                                           ),
-                                        ),
-                                        Expanded(
-                                          child: Padding(
-                                            padding: const EdgeInsets.only(left: 5.0, top: 10.0),
-                                            child: Text(notifications[index]),
+                                          child: Image.asset(
+                                            "assets/flash.png",
+                                            height: 15,
+                                            width: 15,
                                           ),
-                                        ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 5.0),
-                                      child: Text(
-                                        name[index],
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
                                         ),
                                       ),
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(top: 5.0),
-                                      child: Text(message[index]),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              SizedBox(width: 20.0),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(
+                                              left: 5.0, top: 10.0),
+                                          child: Text(notifications[index]),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   Padding(
-                                    padding: const EdgeInsets.only(top: 8.0),
+                                    padding: const EdgeInsets.only(top: 5.0),
                                     child: Text(
-                                      formatNotificationTime(time[index]),
-                                      style: TextStyle(fontSize: 12.0),
+                                      name[index],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
                                   Padding(
-                                      padding: const EdgeInsets.only(top: 10.0,right:0.0),
-                                      child: Align(
+                                    padding: const EdgeInsets.only(top: 5.0),
+                                    child: Text(message[index]),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            SizedBox(width: 20.0),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    formatNotificationTime(time[index]),
+                                    style: TextStyle(fontSize: 12.0),
+                                  ),
+                                ),
+                                Padding(
+                                    padding: const EdgeInsets.only(
+                                        top: 10.0, right: 0.0),
+                                    child: Align(
                                         alignment: Alignment.bottomRight,
                                         child: ClipRRect(
-                                          borderRadius: BorderRadius.circular(6.0),
+                                          borderRadius:
+                                          BorderRadius.circular(6.0),
                                           child: Image.asset(
                                             "assets/echargers.jpg",
                                             height: 35,
                                             width: 35,
                                           ),
-                                        ),
-                                      )
-                                  ),
-                                ],
-                              ),
-                            ],
-                          )
+                                        ))),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   );
