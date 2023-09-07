@@ -9,5 +9,18 @@ class ProviderClass extends ChangeNotifier {
    int second = 1;
    int third = 2;
 
+   void swapWithFirst(int tappedIndex) {
+      if (tappedIndex == second || tappedIndex == third) {
+         final temp = first;
+         first = tappedIndex;
+         if (tappedIndex == second) {
+            second = temp;
+         } else {
+            third = temp;
+         }
+
+         notifyListeners();
+      }
+   }
 
 }
