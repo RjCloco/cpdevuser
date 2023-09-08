@@ -13,13 +13,11 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
-import 'FilterIcons.dart';
 import 'custom_icons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 import 'map_launcher.dart';
 
-// test
 class Map2 extends StatefulWidget {
   const Map2({Key? key}) : super(key: key);
 
@@ -31,6 +29,7 @@ class _Map2State extends State<Map2> {
   Completer<GoogleMapController> _controller = Completer();
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
+
 
   static const LatLng funmall = LatLng(11.0247, 77.0106); //Fun mall
   static const LatLng lakshmicomplex =
@@ -250,20 +249,6 @@ class _Map2State extends State<Map2> {
     );
   }
 
-  int selectedIconIndex = 0; // 0 for truck, 1 for car, 2 for motorcycle
-
-  List<String> texts = [
-    'Fast CCS2',
-    'Slow type 2',
-    'Slow 15A',
-    'Fast DC-001',
-    'fast CHAde',
-    'Slow IEC AC',
-    'Fast type 6',
-  ];
-
-  int icon_selected_index = 0;
-
   Future getData() async {
     await Future.delayed(
       const Duration(seconds: 1),
@@ -271,151 +256,74 @@ class _Map2State extends State<Map2> {
     return;
   }
 
-  // final IconList=[
-  //   twoWheeler(),
-  //   fourWheeler(),
-  //   HeavyVehicle(),
-  // ];
-
-  final IconList = [
-    VehicleIcon(
-      icon: Custom.motorcycle,
-      initialColor: Colors.grey,
-      onTapColor: Colors.cyanAccent,
-      vehicle_name: 'two wheeler',
-    ),
-    VehicleIcon(
-      icon: Custom.car_side,
-      initialColor: Colors.grey,
-      onTapColor: Colors.blueAccent,
-      vehicle_name: 'four wheeler',
-    ),
-    VehicleIcon(
-      icon: Custom.truck,
-      initialColor: Colors.grey,
-      onTapColor: Colors.orangeAccent,
-      vehicle_name: 'heavy vehicle',
-    )
-  ];
-
-  // List<Widget> filterIconList=[
-  //   FiltersIcon(
-  //     filterName: 'Fast CCS2',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'Slow type 2',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'Slow 15A',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'fast CHAde',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'Fast CCS2',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'Slow IEC AC',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  //   FiltersIcon(
-  //     filterName: 'Fast type 6',
-  //     initialColor: Colors.grey,
-  //     onTapColor: Colors.redAccent,
-  //     onTap: () {
-  //       print('vehicle type: ${vehicletypeProvider.vehicleType},');
-  //     },
-  //   ),
-  // ];
-
   @override
   Widget build(BuildContext context) {
-    final vehicletypeProvider = Provider.of<ProviderClass>(context);
+    final now = DateTime.now();
+    String greeting = ''; // Default greeting
+
+    if (now.hour >= 3 && now.hour < 12) {
+      greeting = 'Good morning';
+    } else if (now.hour >= 12 && now.hour < 16) {
+      greeting = 'Good afternoon';
+    } else if (now.hour >= 17 && now.hour < 21) {
+      greeting = 'Good evening';
+    } else {
+      greeting = 'Good night';
+    }
+
+    List<Widget> IconList = [
+      VehicleIcon(
+        icon: Custom.motorcycle,
+        vehicle_name: 'two wheeler',
+        selectedIndex: 0,
+      ),
+      VehicleIcon(
+        icon: Custom.car_side,
+        vehicle_name: 'four wheeler',
+        selectedIndex: 1,
+      ),
+      VehicleIcon(
+        icon: Custom.truck,
+        vehicle_name: 'heavy vehicle',
+        selectedIndex: 2,
+      )
+    ];
+
     List<Widget> filterIconList = [
       FiltersIcon(
         filterName: 'Fast CCS2',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
       ),
       FiltersIcon(
         filterName: 'Slow type 2',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
       ),
       FiltersIcon(
         filterName: 'Slow 15A',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
+      ),
+      FiltersIcon(
+        filterName: 'Fast DC-001',
+        initialColor: Colors.grey,
+        onTapColor: Colors.redAccent,
       ),
       FiltersIcon(
         filterName: 'fast CHAde',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
-      ),
-      FiltersIcon(
-        filterName: 'Fast CCS2',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
       ),
       FiltersIcon(
         filterName: 'Slow IEC AC',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
       ),
       FiltersIcon(
         filterName: 'Fast type 6',
         initialColor: Colors.grey,
         onTapColor: Colors.redAccent,
-        onTap: () {
-          print('vehicle type: ${vehicletypeProvider.vehicleType},');
-        },
       ),
     ];
 
@@ -494,7 +402,12 @@ class _Map2State extends State<Map2> {
             ? Center(child: CircularProgressIndicator())
             : Stack(
                 children: [
-                  Positioned(
+                  Positioned.fill(
+                    // child: ConstrainedBox(
+                    //   constraints: BoxConstraints(
+                    //     maxWidth: double.infinity, // Adjust this as needed
+                    //     maxHeight: double.infinity, // Adjust this as needed
+                    //   ),
                     child: GoogleMap(
                       onMapCreated: (GoogleMapController controller) async {
                         _customInfoWindowController.googleMapController =
@@ -516,391 +429,394 @@ class _Map2State extends State<Map2> {
                       myLocationButtonEnabled: false,
                       markers: Set<Marker>.from(_otherMarkers),
                     ),
+                    // ),
                   ),
-                  // Container(
-                  //
-                  //   child: ListView.builder(
-                  //     scrollDirection: Axis.horizontal,
-                  //     shrinkWrap: true,
-                  //     itemCount: texts.length,
-                  //     itemBuilder: (context, index) {
-                  //       return Padding(
-                  //         padding: const EdgeInsets.all(8.0),
-                  //         child: Card(
-                  //           child: Container(
-                  //             height: 55,
-                  //             width: 55,
-                  //             child: Text(
-                  //               texts[index],
-                  //               style: TextStyle(fontSize: 12),
-                  //             ),
-                  //           ),
-                  //         ),
-                  //       );
-                  //     },
-                  //   ),
-                  // ),
                   Positioned(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        children: [
-                          Row(
+                      top: 3,
+                      left: 20,
+                      child:
+                      Consumer<ProviderClass>(
+                        builder: (context, provider, _) {
+                          return Row(
                             children: [
-                              Card(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedIconIndex =
-                                          0; // Truck icon tapped
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 55,
-                                    width: 55,
-                                    child: Icon(Custom.truck),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      IconList[provider.first],
+                                      Container(
+                                        height: 50,
+                                        width: 300,
+                                        child: ListView(
+                                          scrollDirection: Axis.horizontal,
+                                          children: filterIconList.map((iconWidget) {
+                                            return Padding(
+                                              padding:
+                                              const EdgeInsets.symmetric(horizontal: 10),
+                                              child: iconWidget,
+                                            );
+                                          }).toList(),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                ),
-                              ),
-                              Container(
-                                height: 60,
-                                width: MediaQuery.of(context).size.width - 90,
-                                child: SingleChildScrollView(
-                                  physics: ScrollPhysics(),
-                                  scrollDirection: Axis.horizontal,
-                                  child: Visibility(
-                                    visible: selectedIconIndex == 0,
-                                    child: ListView.builder(
-                                      scrollDirection: Axis.horizontal,
-                                      shrinkWrap: true,
-                                      itemCount: texts.length,
-                                      itemBuilder: (context, index) {
-                                        return Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Card(
-                                            child: Container(
-                                              height: 55,
-                                              width: 55,
-                                              child: Text(
-                                                texts[index],
-                                                style: TextStyle(fontSize: 12),
-                                              ),
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                                ),
+                                  SizedBox(height: 5),
+                                  IconList[provider.second],
+                                  SizedBox(height: 5),
+                                  IconList[provider.third],
+                                  SizedBox(height: 5),
+                                ],
                               ),
                             ],
-                          ),
-                          Row(
-                            children: [
-                              Card(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedIconIndex = 1; // Car icon tapped
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 55,
-                                    width: 55,
-                                    child: Icon(Custom.car_side),
-                                  ),
-                                ),
-                              ),
-                              // Container(
-                              //   height: 60,
-                              //   width: MediaQuery.of(context).size.width - 90,
-                              //   child: SingleChildScrollView(
-                              //     physics: ScrollPhysics(),
-                              //     scrollDirection: Axis.horizontal,
-                              //     child: Visibility(
-                              //       visible: selectedIconIndex == 1,
-                              //       child: ListView.builder(
-                              //         scrollDirection: Axis.horizontal,
-                              //         shrinkWrap: true,
-                              //         itemCount: texts.length,
-                              //         itemBuilder: (context, index) {
-                              //           return Padding(
-                              //             padding: const EdgeInsets.all(8.0),
-                              //             child: Card(
-                              //               child: Container(
-                              //                 height: 55,
-                              //                 width: 55,
-                              //                 child: Text(
-                              //                   texts[index],
-                              //                   style: TextStyle(fontSize: 12),
-                              //                 ),
-                              //               ),
-                              //             ),
-                              //           );
-                              //         },
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                          Row(
-                            children: [
-                              Card(
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() {
-                                      selectedIconIndex =
-                                          2; // Motorcycle icon tapped
-                                    });
-                                  },
-                                  child: Container(
-                                    height: 55,
-                                    width: 55,
-                                    child: Icon(Custom.motorcycle),
-                                  ),
-                                ),
-                              ),
-                              // Container(
-                              //   height: 60,
-                              //   width: MediaQuery.of(context).size.width - 90,
-                              //   child: SingleChildScrollView(
-                              //     physics: ScrollPhysics(),
-                              //     scrollDirection: Axis.horizontal,
-                              //     child: Visibility(
-                              //       visible: selectedIconIndex == 2,
-                              //       child: ListView.builder(
-                              //         scrollDirection: Axis.horizontal,
-                              //         shrinkWrap: true,
-                              //         itemCount: texts.length,
-                              //         itemBuilder: (context, index) {
-                              //           return Padding(
-                              //             padding: const EdgeInsets.all(8.0),
-                              //             child: Card(
-                              //               child: Container(
-                              //                 height: 55,
-                              //                 width: 55,
-                              //                 child: Text(
-                              //                   texts[index],
-                              //                   style: TextStyle(fontSize: 12),
-                              //                 ),
-                              //               ),
-                              //             ),
-                              //           );
-                              //         },
-                              //       ),
-                              //     ),
-                              //   ),
-                              // ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
+                          );
+                        },
+                      )
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SlidingUpPanel(
-                      minHeight: 220, // Minimum height of the panel
-                      panel: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 5,
-                            margin: EdgeInsets.symmetric(vertical: 10),
-                            decoration: BoxDecoration(
-                              color: Colors.grey,
-                              borderRadius: BorderRadius.circular(2.5),
-                            ),
+                  SlidingUpPanel(
+                    minHeight: 240, // Minimum height of the panel
+                    panel: Column(
+                      // mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container( //for that scrollable showing
+                          width: 40,
+                          height: 5,
+                          margin: EdgeInsets.symmetric(vertical: 10),
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            borderRadius: BorderRadius.circular(2.5),
                           ),
-                          Text(
-                            'Good Afternoon, Krupa. ext',
-                            style: TextStyle(
+                        ),
+                        Text(
+                          '$greeting, Krupa.',
+                          style: TextStyle(
                               color: GlobalColors.BottomNavIcon,
                               fontWeight: FontWeight.bold,
+                              fontSize: 20),
+                          textAlign: TextAlign.left,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: TextField(
+                            controller: _searchController,
+                            decoration: InputDecoration(
+                              hintText: 'Charging stations',
+                              filled: true,
+                              fillColor: Colors
+                                  .white, // Set the background color of the TextField
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide.none, // Remove border
+                                borderRadius: BorderRadius.circular(
+                                    18), // Add border radius
+                              ),
+                              prefixIcon: IconButton(
+                                onPressed: _onSearchIconPressed,
+                                icon: Icon(Icons.search, size: 23),
+                              ),
+                              suffixIcon: IconButton(
+                                onPressed: () {},
+                                icon: Icon(Custom.equalizer, size: 18),
+                              ),
                             ),
                           ),
-                          Expanded(
-                            child: Text("Expanded version"),
-                          ),
-                        ],
-                      ),
-                      collapsed: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(24),
-                            topRight: Radius.circular(24),
-                          ),
                         ),
-                        child: Center(
-                          child: Column(
-                            // mainAxisAlignment: MainAxisAlignment.center,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Container(
-                                width: 40,
-                                height: 5,
-                                margin: EdgeInsets.symmetric(vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey,
-                                  borderRadius: BorderRadius.circular(2.5),
-                                ),
-                              ),
-                              Text(
-                                'Good Afternoon, Krupa.',
-                                style: TextStyle(
-                                    color: GlobalColors.BottomNavIcon,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20),
-                                textAlign: TextAlign.left,
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0),
-                                child: TextField(
-                                  controller: _searchController,
-                                  decoration: InputDecoration(
-                                    hintText: 'Charging stations',
-                                    filled: true,
-                                    fillColor: Colors
-                                        .white, // Set the background color of the TextField
-                                    border: OutlineInputBorder(
-                                      borderSide:
-                                          BorderSide.none, // Remove border
-                                      borderRadius: BorderRadius.circular(
-                                          18), // Add border radius
-                                    ),
-                                    prefixIcon: IconButton(
-                                      onPressed: _onSearchIconPressed,
-                                      icon: Icon(Icons.search, size: 23),
-                                    ),
-                                    suffixIcon: IconButton(
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    child: IconButton(
                                       onPressed: () {},
-                                      icon: Icon(Custom.equalizer, size: 18),
+                                      icon: Icon(Icons.charging_station_sharp,
+                                          size: 28),
                                     ),
                                   ),
-                                ),
+                                  Text(
+                                    "Find",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    "Charger",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
                               ),
-                              Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 30.0),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceAround,
-                                  children: [
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(
-                                                Icons.charging_station_sharp,
-                                                size: 28),
-                                          ),
-                                        ),
-                                        Text(
-                                          "Find",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        Text(
-                                          "Charger",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    child: IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(
+                                          Icons.add_location_alt_outlined,
+                                          size: 28),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(
-                                                Icons.add_location_alt_outlined,
-                                                size: 28),
-                                          ),
-                                        ),
-                                        Text(
-                                          "Add",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        Text(
-                                          "Charger",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
+                                  ),
+                                  Text(
+                                    "Add",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    "Charger",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    child: IconButton(
+                                      onPressed: () {},
+                                      icon: Icon(Icons.message_outlined,
+                                          size: 28),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.message_outlined,
-                                                size: 28),
-                                          ),
-                                        ),
-                                        Text(
-                                          "EV",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        Text(
-                                          "Channels",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
+                                  ),
+                                  Text(
+                                    "EV",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    "Channels",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                              Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  CircleAvatar(
+                                    backgroundColor: Colors.transparent,
+                                    child: IconButton(
+                                      onPressed: () {},
+                                      icon:
+                                          Icon(Icons.route_outlined, size: 28),
                                     ),
-                                    Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        CircleAvatar(
-                                          backgroundColor: Colors.transparent,
-                                          child: IconButton(
-                                            onPressed: () {},
-                                            icon: Icon(Icons.route_outlined,
-                                                size: 28),
-                                          ),
-                                        ),
-                                        Text(
-                                          "Quick",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                        Text(
-                                          "Routes",
-                                          style: TextStyle(fontSize: 12),
-                                        ),
-                                      ],
-                                    ),
-                                  ],
-                                ),
-                              )
+                                  ),
+                                  Text(
+                                    "Quick",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                  Text(
+                                    "Routes",
+                                    style: TextStyle(fontSize: 12),
+                                  ),
+                                ],
+                              ),
                             ],
                           ),
                         ),
+                        Divider(
+                          color: Colors.black,
+                          height: 23,
+                          thickness: 2,
+                          indent: 25,
+                          endIndent: 25,
+                        ),
+                        Container(
+                          child: Column(
+                            children: [
+                              Text("Popular Community",style: TextStyle(fontSize: 24),),
+                              Text("Coming soon...")
+                            ],
+                          ),
+                        ),
+                        Divider(
+                          color: Colors.black,
+                          height: 23,
+                          thickness: 2,
+                          indent: 25,
+                          endIndent: 25,
+                        ),
+                        Container(
+                          child: Column(
+                            children: [
+                              Text("Latest updates",style: TextStyle(fontSize: 24),),
+                              Text("Coming soon...")
+                            ],
+                          ),
+                        )
+                      ],
+                    ),
+                    collapsed: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(24),
+                          topRight: Radius.circular(24),
+                        ),
                       ),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(24),
-                        topRight: Radius.circular(24),
+                      child: Center(
+                        child: Column(
+                          // mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 5,
+                              margin: EdgeInsets.symmetric(vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.grey,
+                                borderRadius: BorderRadius.circular(2.5),
+                              ),
+                            ),
+                            Text(
+                              '$greeting, Krupa.',
+                              style: TextStyle(
+                                  color: GlobalColors.BottomNavIcon,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20),
+                              textAlign: TextAlign.left,
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: TextField(
+                                controller: _searchController,
+                                decoration: InputDecoration(
+                                  hintText: 'Charging stations',
+                                  filled: true,
+                                  fillColor: Colors
+                                      .white, // Set the background color of the TextField
+                                  border: OutlineInputBorder(
+                                    borderSide:
+                                        BorderSide.none, // Remove border
+                                    borderRadius: BorderRadius.circular(
+                                        18), // Add border radius
+                                  ),
+                                  prefixIcon: IconButton(
+                                    onPressed: _onSearchIconPressed,
+                                    icon: Icon(Icons.search, size: 23),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {},
+                                    icon: Icon(Custom.equalizer, size: 18),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 30.0),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceAround,
+                                children: [
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.transparent,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                              Icons.charging_station_sharp,
+                                              size: 28),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Find",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      Text(
+                                        "Charger",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.transparent,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(
+                                              Icons.add_location_alt_outlined,
+                                              size: 28),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Add",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      Text(
+                                        "Charger",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.transparent,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(Icons.message_outlined,
+                                              size: 28),
+                                        ),
+                                      ),
+                                      Text(
+                                        "EV",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      Text(
+                                        "Channels",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                  Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      CircleAvatar(
+                                        backgroundColor: Colors.transparent,
+                                        child: IconButton(
+                                          onPressed: () {},
+                                          icon: Icon(Icons.route_outlined,
+                                              size: 28),
+                                        ),
+                                      ),
+                                      Text(
+                                        "Quick",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                      Text(
+                                        "Routes",
+                                        style: TextStyle(fontSize: 12),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Divider(
+                              color: Colors.black,
+                              height: 23,
+                              thickness: 2,
+                              indent: 25,
+                              endIndent: 25,
+                            ),
+                          ],
+                        ),
                       ),
+                    ),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24),
+                      topRight: Radius.circular(24),
                     ),
                   ),
-                  Container(
-                    height: 100,
-                    width: 200,
-                    child: CustomInfoWindow(
-                      controller: _customInfoWindowController,
-                      height: 100, // Set an appropriate height
-                      width: 200, // Set an appropriate width
-                      offset: 50,
-                    ),
+                  CustomInfoWindow(
+                    controller: _customInfoWindowController,
+                    height: 100, // Set an appropriate height
+                    width: 200, // Set an appropriate width
                   ),
                 ],
               ),
@@ -908,6 +824,31 @@ class _Map2State extends State<Map2> {
     );
   }
 }
+
+// scrollable list
+// Container(
+//   height: 50,
+//   width: 300,
+//   child: ListView(
+//     scrollDirection: Axis.horizontal,
+//     children: filterIconList.map((iconWidget) {
+//       return Padding(
+//         padding:
+//         const EdgeInsets.symmetric(horizontal: 10),
+//         child: iconWidget,
+//       );
+//     }).toList(),
+//   ),
+// ),
+
+//list of items
+// IconList.map((iconWidget) {
+//   return Padding(
+//     padding:
+//         const EdgeInsets.symmetric(vertical: 10.0),
+//     child: iconWidget,
+//   );
+// }).toList(),
 
 class MarkerDetailsPage extends StatelessWidget {
   final String title;
@@ -956,6 +897,325 @@ class MarkerDetailsPage extends StatelessWidget {
     );
   }
 }
+
+// final IconList=[
+//   twoWheeler(),
+//   fourWheeler(),
+//   HeavyVehicle(),
+// ];
+
+// List<Widget> IconList = [
+//   VehicleIcon(
+//     icon: Custom.motorcycle,
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.cyanAccent,
+//     vehicle_name: 'two wheeler',
+//   ),
+//   VehicleIcon(
+//     icon: Custom.car_side,
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.blueAccent,
+//     vehicle_name: 'four wheeler',
+//   ),
+//   VehicleIcon(
+//     icon: Custom.truck,
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.orangeAccent,
+//     vehicle_name: 'heavy vehicle',
+//   )
+// ];
+
+
+
+// child: Row(
+//   children: [
+//     Column(
+//       crossAxisAlignment: CrossAxisAlignment.start,
+//       children: [
+//         Row(
+//           children: [
+//             IconList[vehicletypeProvider.first],
+//             Container(
+//               height: 50,
+//               width: 300,
+//               child: ListView(
+//                 scrollDirection: Axis.horizontal,
+//                 children: filterIconList.map((iconWidget) {
+//                   return Padding(
+//                     padding:
+//                     const EdgeInsets.symmetric(horizontal: 10),
+//                     child: iconWidget,
+//                   );
+//                 }).toList(),
+//               ),
+//             ),
+//           ],
+//         ),
+//         SizedBox(height: 5,),
+//         IconList[vehicletypeProvider.second],
+//         SizedBox(height: 5,),
+//         IconList[vehicletypeProvider.third],
+//         SizedBox(height: 5,),
+//         ]
+//     ),
+//   ],
+// ),
+
+// List<Widget> filterIconList=[
+//   FiltersIcon(
+//     filterName: 'Fast CCS2',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'Slow type 2',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'Slow 15A',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'fast CHAde',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'Fast CCS2',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'Slow IEC AC',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+//   FiltersIcon(
+//     filterName: 'Fast type 6',
+//     initialColor: Colors.grey,
+//     onTapColor: Colors.redAccent,
+//     onTap: () {
+//       print('vehicle type: ${vehicletypeProvider.vehicleType},');
+//     },
+//   ),
+// ];
+
+
+// SingleChildScrollView(
+//   scrollDirection: Axis.horizontal,
+//   physics: AlwaysScrollableScrollPhysics(),
+//   child:
+//   Row(
+//     children: filterIconList.map((iconWidget) {
+//       return Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 10.0),
+//         child: iconWidget,
+//       );
+//     }).toList(),
+//   ),
+// ),
+
+// Container(
+//
+//   child: ListView.builder(
+//     scrollDirection: Axis.horizontal,
+//     shrinkWrap: true,
+//     itemCount: texts.length,
+//     itemBuilder: (context, index) {
+//       return Padding(
+//         padding: const EdgeInsets.all(8.0),
+//         child: Card(
+//           child: Container(
+//             height: 55,
+//             width: 55,
+//             child: Text(
+//               texts[index],
+//               style: TextStyle(fontSize: 12),
+//             ),
+//           ),
+//         ),
+//       );
+//     },
+//   ),
+// ),
+//
+
+// Positioned(
+//   child: Padding(
+//     padding: const EdgeInsets.all(8.0),
+//     child: Column(
+//       children: [
+//         Row(
+//           children: [
+//             Card(
+//               child: GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     selectedIconIndex = 0; // Truck icon tapped
+//                   });
+//                 },
+//                 child: Container(
+//                   height: 55,
+//                   width: 55,
+//                   child: Icon(Custom.truck),
+//                 ),
+//               ),
+//             ),
+//             Container(
+//               height: 60,
+//               width: MediaQuery.of(context).size.width - 90,
+//               child: SingleChildScrollView(
+//                 physics: ScrollPhysics(),
+//                 scrollDirection: Axis.horizontal,
+//                 child: Visibility(
+//                   visible: selectedIconIndex == 0,
+//                   child: ListView.builder(
+//                     scrollDirection: Axis.horizontal,
+//                     shrinkWrap: true,
+//                     itemCount: texts.length,
+//                     itemBuilder: (context, index) {
+//                       return Padding(
+//                         padding: const EdgeInsets.all(8.0),
+//                         child: Card(
+//                           child: Container(
+//                             height: 55,
+//                             width: 55,
+//                             child: Text(
+//                               texts[index],
+//                               style: TextStyle(fontSize: 12),
+//                             ),
+//                           ),
+//                         ),
+//                       );
+//                     },
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//         Row(
+//           children: [
+//             Card(
+//               child: GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     selectedIconIndex = 1; // Car icon tapped
+//                   });
+//                 },
+//                 child: Container(
+//                   height: 55,
+//                   width: 55,
+//                   child: Icon(Custom.car_side),
+//                 ),
+//               ),
+//             ),
+//             // Container(
+//             //   height: 60,
+//             //   width: MediaQuery.of(context).size.width - 90,
+//             //   child: SingleChildScrollView(
+//             //     physics: ScrollPhysics(),
+//             //     scrollDirection: Axis.horizontal,
+//             //     child: Visibility(
+//             //       visible: selectedIconIndex == 1,
+//             //       child: ListView.builder(
+//             //         scrollDirection: Axis.horizontal,
+//             //         shrinkWrap: true,
+//             //         itemCount: texts.length,
+//             //         itemBuilder: (context, index) {
+//             //           return Padding(
+//             //             padding: const EdgeInsets.all(8.0),
+//             //             child: Card(
+//             //               child: Container(
+//             //                 height: 55,
+//             //                 width: 55,
+//             //                 child: Text(
+//             //                   texts[index],
+//             //                   style: TextStyle(fontSize: 12),
+//             //                 ),
+//             //               ),
+//             //             ),
+//             //           );
+//             //         },
+//             //       ),
+//             //     ),
+//             //   ),
+//             // ),
+//           ],
+//         ),
+//         Row(
+//           children: [
+//             Card(
+//               child: GestureDetector(
+//                 onTap: () {
+//                   setState(() {
+//                     selectedIconIndex = 2; // Motorcycle icon tapped
+//                   });
+//                 },
+//                 child: Container(
+//                   height: 55,
+//                   width: 55,
+//                   child: Icon(Custom.motorcycle),
+//                 ),
+//               ),
+//             ),
+//             // Container(
+//             //   height: 60,
+//             //   width: MediaQuery.of(context).size.width - 90,
+//             //   child: SingleChildScrollView(
+//             //     physics: ScrollPhysics(),
+//             //     scrollDirection: Axis.horizontal,
+//             //     child: Visibility(
+//             //       visible: selectedIconIndex == 2,
+//             //       child: ListView.builder(
+//             //         scrollDirection: Axis.horizontal,
+//             //         shrinkWrap: true,
+//             //         itemCount: texts.length,
+//             //         itemBuilder: (context, index) {
+//             //           return Padding(
+//             //             padding: const EdgeInsets.all(8.0),
+//             //             child: Card(
+//             //               child: Container(
+//             //                 height: 55,
+//             //                 width: 55,
+//             //                 child: Text(
+//             //                   texts[index],
+//             //                   style: TextStyle(fontSize: 12),
+//             //                 ),
+//             //               ),
+//             //             ),
+//             //           );
+//             //         },
+//             //       ),
+//             //     ),
+//             //   ),
+//             // ),
+//           ],
+//         ),
+//       ],
+//     ),
+//   ),
+// ),
 
 // Positioned(
 //     child: FutureBuilder(
