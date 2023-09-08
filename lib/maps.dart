@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
+import 'dart:ui';
 import 'package:clippy_flutter/clippy_flutter.dart';
 import 'package:cpdevuser/Provider.dart';
 import 'package:cpdevuser/colors.dart';
@@ -30,7 +31,8 @@ class _Map2State extends State<Map2> {
   CustomInfoWindowController _customInfoWindowController =
       CustomInfoWindowController();
 
-
+  double min_height_sliding=240;
+  bool isPanelVisible = true;
   static const LatLng funmall = LatLng(11.0247, 77.0106); //Fun mall
   static const LatLng lakshmicomplex =
       LatLng(11.0169, 76.9655); //lakshmi complex
@@ -53,9 +55,74 @@ class _Map2State extends State<Map2> {
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
 
+  // Future<BitmapDescriptor> createCustomMarkerIcon(String iconImage, Color borderColor) async {
+  //   final width = 100; // Adjust the marker width as needed
+  //   final height = 100; // Adjust the marker height as needed
+  //
+  //   final recorder = PictureRecorder();
+  //   final canvas = Canvas(
+  //     recorder,
+  //     Rect.fromPoints(Offset(0.0, 0.0), Offset(width.toDouble(), height.toDouble())),
+  //   );
+  //
+  //   // Draw a circle shape with a border
+  //   final paint = Paint()
+  //     ..color = borderColor // Set the border color
+  //     ..style = PaintingStyle.fill;
+  //
+  //   final radius = width / 2;
+  //   final centerX = width / 2;
+  //   final centerY = height / 2;
+  //
+  //   canvas.drawCircle(Offset(centerX, centerY), radius, paint);
+  //
+  //   // Load and draw the icon image in the center
+  //   final ByteData imageData = await rootBundle.load(iconImage);
+  //   final Uint8List imageBytes = imageData.buffer.asUint8List();
+  //   final ui.Codec codec = await ui.instantiateImageCodec(imageBytes);
+  //   final ui.FrameInfo fi = await codec.getNextFrame();
+  //
+  //   final imageWidth = fi.image.width.toDouble();
+  //   final imageHeight = fi.image.height.toDouble();
+  //   final imageOffsetX = (width - imageWidth) / 2;
+  //   final imageOffsetY = (height - imageHeight) / 2;
+  //
+  //   canvas.drawImageRect(
+  //     fi.image,
+  //     Rect.fromLTRB(0, 0, imageWidth, imageHeight),
+  //     Rect.fromPoints(
+  //       Offset(imageOffsetX, imageOffsetY),
+  //       Offset(imageOffsetX + imageWidth, imageOffsetY + imageHeight),
+  //     ),
+  //     Paint(),
+  //   );
+  //
+  //   final img = await recorder.endRecording().toImage(width, height);
+  //   final imageDataBytes = await img.toByteData(format: ui.ImageByteFormat.png);
+  //
+  //   return BitmapDescriptor.fromBytes(imageDataBytes!.buffer.asUint8List());
+  // }
+  //
+  // void addCustomMarker(GoogleMapController controller, LatLng position, String iconImage, Color borderColor) {
+  //   createCustomMarkerIcon(iconImage, borderColor).then((customIcon) {
+  //     final marker = Marker(
+  //       markerId: MarkerId('custom_marker_${_otherMarkers.length}'),
+  //       position: position,
+  //       icon: customIcon,
+  //       onTap: () {
+  //         _onMarkerTapped('Custom Marker', 'Charging station', position.latitude, position.longitude);
+  //       },
+  //     );
+  //
+  //     setState(() {
+  //       _otherMarkers.add(marker);
+  //     });
+  //   });
+  // }
+
   addCustomIcon() async {
     BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(0.5, 0.5)), 'assets/img.png')
+            const ImageConfiguration(size: Size(5.5, 5.5)), 'assets/chargePartnersLogo.png')
         .then((icon) {
       setState(() {
         markerIcon = icon;
@@ -63,7 +130,7 @@ class _Map2State extends State<Map2> {
       // markerIcon = icon;
     });
 
-    final Uint8List markIcons = await getImages('assets/img.png', 50);
+    final Uint8List markIcons = await getImages('assets/chargePartnersLogo.png', 150);
   }
 
   Future<Uint8List> getImages(String path, int width) async {
@@ -237,6 +304,75 @@ class _Map2State extends State<Map2> {
 
     super.initState();
   }
+
+  // @override
+  // void initState() {
+  //   getCurrentLocation();
+  //   createCustomMarkerIcon('assets/chargePartnersLogo.png', Colors.blue).then((customIcon) {
+  //     _otherMarkers = [
+  //       Marker(
+  //         markerId: const MarkerId("Lakshmi Complex"),
+  //         position: lakshmicomplex,
+  //         onTap: () {
+  //           _customInfoWindowController.addInfoWindow!(
+  //             GestureDetector(
+  //               onTap: () {
+  //                 _onMarkerTapped(
+  //                     'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
+  //               },
+  //               child: Column(
+  //                 children: [
+  //                   Expanded(
+  //                     child: Container(
+  //                       decoration: BoxDecoration(
+  //                         color: Colors.green[700],
+  //                         borderRadius: BorderRadius.circular(4),
+  //                       ),
+  //                       child: Column(
+  //                         mainAxisAlignment: MainAxisAlignment.center,
+  //                         children: [
+  //                           Icon(
+  //                             Icons.account_circle,
+  //                             color: Colors.white,
+  //                             size: 30,
+  //                           ),
+  //                           Text(
+  //                             "Lakshmi complex",
+  //                             style: TextStyle(color: Colors.black),
+  //                           ),
+  //                           Text(
+  //                             "Charging station",
+  //                             style: TextStyle(color: Colors.white),
+  //                           )
+  //                         ],
+  //                       ),
+  //                       width: double.infinity,
+  //                       height: double.infinity,
+  //                     ),
+  //                   ),
+  //                   Triangle.isosceles(
+  //                     edge: Edge.BOTTOM,
+  //                     child: Container(
+  //                       color: Colors.green[700],
+  //                       width: 20.0,
+  //                       height: 10.0,
+  //                     ),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             lakshmicomplex,
+  //           );
+  //         },
+  //         icon: customIcon, // Use the customIcon here
+  //       ),
+  //     ];
+  //     setState(() {});
+  //   });
+  //
+  //   super.initState();
+  // }
+
 
   _onMarkerTapped(
       String name, String snippet, double latitude, double longitude) {
@@ -473,8 +609,13 @@ class _Map2State extends State<Map2> {
                         },
                       )
                   ),
-                  SlidingUpPanel(
-                    minHeight: 240, // Minimum height of the panel
+                   SlidingUpPanel(
+                    onPanelClosed: (){
+                      setState(() {
+                        min_height_sliding = 0;
+                      });
+                    },
+                    minHeight: min_height_sliding, // Minimum height of the panel
                     panel: Column(
                       // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -564,27 +705,6 @@ class _Map2State extends State<Map2> {
                                   ),
                                   Text(
                                     "Charger",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                ],
-                              ),
-                              Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    child: IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(Icons.message_outlined,
-                                          size: 28),
-                                    ),
-                                  ),
-                                  Text(
-                                    "EV",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                  Text(
-                                    "Channels",
                                     style: TextStyle(fontSize: 12),
                                   ),
                                 ],
@@ -748,27 +868,6 @@ class _Map2State extends State<Map2> {
                                       ),
                                       Text(
                                         "Charger",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                    ],
-                                  ),
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CircleAvatar(
-                                        backgroundColor: Colors.transparent,
-                                        child: IconButton(
-                                          onPressed: () {},
-                                          icon: Icon(Icons.message_outlined,
-                                              size: 28),
-                                        ),
-                                      ),
-                                      Text(
-                                        "EV",
-                                        style: TextStyle(fontSize: 12),
-                                      ),
-                                      Text(
-                                        "Channels",
                                         style: TextStyle(fontSize: 12),
                                       ),
                                     ],
