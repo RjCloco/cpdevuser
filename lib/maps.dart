@@ -248,6 +248,7 @@ class _Map2State extends State<Map2> {
       ),
     );
   }
+
   Future getData() async {
     await Future.delayed(
       const Duration(seconds: 1),

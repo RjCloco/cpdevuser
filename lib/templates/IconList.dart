@@ -11,6 +11,7 @@ class VehicleIcon extends StatefulWidget {
   @override
   State<VehicleIcon> createState() => _VehicleIconState();
 }
+
 class _VehicleIconState extends State<VehicleIcon>  {
   @override
   Widget build(BuildContext context) {
