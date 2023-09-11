@@ -55,12 +55,11 @@ dependencies:
   google_fonts: ^5.1.0
   provider: ^6.0.5
   we_slide: ^2.4.0
-#  custom_marker: ^1.0.0
+  custom_marker: ^1.0.0
   geolocator: ^10.0.1
   geocoding: ^2.1.0
   lottie: ^2.6.0
   overlay_loading_progress: ^1.0.1
-  the_widget_marker: ^1.0.0
 
 dev_dependencies:
   flutter_test:
