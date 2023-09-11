@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'dart:ui';
 import 'package:clippy_flutter/clippy_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cpdevuser/Provider.dart';
 import 'package:cpdevuser/colors.dart';
 import 'package:cpdevuser/templates/IconList.dart';
@@ -13,7 +14,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
+import 'package:overlay_loading_progress/overlay_loading_progress.dart';
 import 'package:provider/provider.dart';
+import 'add_station.dart';
+import 'add_station_details.dart';
 import 'custom_icons.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
@@ -55,53 +59,53 @@ class _Map2State extends State<Map2> {
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
 
-  // Future<BitmapDescriptor> createCustomMarkerIcon(String iconImage, Color borderColor) async {
-  //   final width = 100; // Adjust the marker width as needed
-  //   final height = 100; // Adjust the marker height as needed
-  //
-  //   final recorder = PictureRecorder();
-  //   final canvas = Canvas(
-  //     recorder,
-  //     Rect.fromPoints(Offset(0.0, 0.0), Offset(width.toDouble(), height.toDouble())),
-  //   );
-  //
-  //   // Draw a circle shape with a border
-  //   final paint = Paint()
-  //     ..color = borderColor // Set the border color
-  //     ..style = PaintingStyle.fill;
-  //
-  //   final radius = width / 2;
-  //   final centerX = width / 2;
-  //   final centerY = height / 2;
-  //
-  //   canvas.drawCircle(Offset(centerX, centerY), radius, paint);
-  //
-  //   // Load and draw the icon image in the center
-  //   final ByteData imageData = await rootBundle.load(iconImage);
-  //   final Uint8List imageBytes = imageData.buffer.asUint8List();
-  //   final ui.Codec codec = await ui.instantiateImageCodec(imageBytes);
-  //   final ui.FrameInfo fi = await codec.getNextFrame();
-  //
-  //   final imageWidth = fi.image.width.toDouble();
-  //   final imageHeight = fi.image.height.toDouble();
-  //   final imageOffsetX = (width - imageWidth) / 2;
-  //   final imageOffsetY = (height - imageHeight) / 2;
-  //
-  //   canvas.drawImageRect(
-  //     fi.image,
-  //     Rect.fromLTRB(0, 0, imageWidth, imageHeight),
-  //     Rect.fromPoints(
-  //       Offset(imageOffsetX, imageOffsetY),
-  //       Offset(imageOffsetX + imageWidth, imageOffsetY + imageHeight),
-  //     ),
-  //     Paint(),
-  //   );
-  //
-  //   final img = await recorder.endRecording().toImage(width, height);
-  //   final imageDataBytes = await img.toByteData(format: ui.ImageByteFormat.png);
-  //
-  //   return BitmapDescriptor.fromBytes(imageDataBytes!.buffer.asUint8List());
-  // }
+  Future<BitmapDescriptor> createCustomMarkerIcon(String iconImage, Color borderColor) async {
+    final width = 60; // Adjust the marker width as needed
+    final height = 60; // Adjust the marker height as needed
+
+    final recorder = PictureRecorder();
+    final canvas = Canvas(
+      recorder,
+      Rect.fromPoints(Offset(0.0, 0.0), Offset(width.toDouble(), height.toDouble())),
+    );
+
+    // Draw a circle shape with a border
+    final paint = Paint()
+      ..color = borderColor // Set the border color
+      ..style = PaintingStyle.fill;
+
+    final radius = width / 2;
+    final centerX = width / 2;
+    final centerY = height / 2;
+
+    canvas.drawCircle(Offset(centerX, centerY), radius, paint);
+
+    // Load and draw the icon image in the center
+    final ByteData imageData = await rootBundle.load(iconImage);
+    final Uint8List imageBytes = imageData.buffer.asUint8List();
+    final ui.Codec codec = await ui.instantiateImageCodec(imageBytes);
+    final ui.FrameInfo fi = await codec.getNextFrame();
+
+    final imageWidth = fi.image.width.toDouble();
+    final imageHeight = fi.image.height.toDouble();
+    final imageOffsetX = (width - imageWidth) / 2;
+    final imageOffsetY = (height - imageHeight) / 2;
+
+    canvas.drawImageRect(
+      fi.image,
+      Rect.fromLTRB(0, 0, imageWidth, imageHeight),
+      Rect.fromPoints(
+        Offset(imageOffsetX, imageOffsetY),
+        Offset(imageOffsetX + imageWidth, imageOffsetY + imageHeight),
+      ),
+      Paint(),
+    );
+
+    final img = await recorder.endRecording().toImage(width, height);
+    final imageDataBytes = await img.toByteData(format: ui.ImageByteFormat.png);
+
+    return BitmapDescriptor.fromBytes(imageDataBytes!.buffer.asUint8List());
+  }
   //
   // void addCustomMarker(GoogleMapController controller, LatLng position, String iconImage, Color borderColor) {
   //   createCustomMarkerIcon(iconImage, borderColor).then((customIcon) {
@@ -237,78 +241,10 @@ class _Map2State extends State<Map2> {
     super.dispose();
   }
 
-  @override
-  void initState() {
-    getCurrentLocation();
-    addCustomIcon().then((_) {
-      _otherMarkers = [
-        Marker(
-          markerId: const MarkerId("Lakshmi Complex"),
-          position: lakshmicomplex,
-          onTap: () {
-            _customInfoWindowController.addInfoWindow!(
-              GestureDetector(
-                onTap: () {
-                  _onMarkerTapped(
-                      'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            Text(
-                              "Lakshmi complex",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              "Charging station",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    Triangle.isosceles(
-                      edge: Edge.BOTTOM,
-                      child: Container(
-                        color: Colors.green[700],
-                        width: 20.0,
-                        height: 10.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              lakshmicomplex,
-            );
-          },
-          icon: markerIcon,
-        ),
-      ];
-      setState(() {});
-    });
-
-    super.initState();
-  }
-
   // @override
   // void initState() {
   //   getCurrentLocation();
-  //   createCustomMarkerIcon('assets/chargePartnersLogo.png', Colors.blue).then((customIcon) {
+  //   addCustomIcon().then((_) {
   //     _otherMarkers = [
   //       Marker(
   //         markerId: const MarkerId("Lakshmi Complex"),
@@ -364,7 +300,7 @@ class _Map2State extends State<Map2> {
   //             lakshmicomplex,
   //           );
   //         },
-  //         icon: customIcon, // Use the customIcon here
+  //         icon: markerIcon,
   //       ),
   //     ];
   //     setState(() {});
@@ -372,6 +308,142 @@ class _Map2State extends State<Map2> {
   //
   //   super.initState();
   // }
+
+  Future<List<DocumentSnapshot>> fetchData() async {
+    // Get a reference to the 'StationManagement' collection
+    CollectionReference stationCollection = FirebaseFirestore.instance.collection('StationManagement');
+
+    try {
+      QuerySnapshot querySnapshot = await stationCollection.where('ActiveStatus', isEqualTo: true).get();
+      return querySnapshot.docs;
+    } catch (error) {
+      // Handle any errors that occur during the data fetch
+      print('Error fetching data: $error');
+      return [];
+    }
+  }
+
+
+
+  Future<void> DBAddStation()async {
+    String collectionName = 'StationManagement'; // Replace with your desired collection name
+    final CollectionReference collectionRef = FirebaseFirestore.instance.collection(collectionName);
+    final DocumentSnapshot docSnapshot = await collectionRef.doc('Lakshmi Mills').get();
+    await collectionRef.doc('Lakshmi Mills').set({
+      'ActiveStatus': true,
+      'Address': {
+        'City': 'Coimbatore',
+        'State':'Tamil Nadu',
+        'PinCode':641062,
+      },
+      'CreatedAt':  DateTime.now(),
+      'Latitude':11.0169,
+      'Longitude':76.9655,
+      'StationName': 'Lakshmi Mills',
+      'Description': 'Lakshmi complex'
+      // Add other fields if required
+
+    });
+
+  }
+
+  Future<void>  AddStationdata(List<DocumentSnapshot<Object?>> stationData) async {
+
+    for (var document in stationData) {
+      _otherMarkers.add(
+        Marker(
+          markerId:MarkerId(document['StationName']),
+          position: LatLng(document['Latitude'],document['Longitude']),
+          infoWindow: InfoWindow(
+            title: document['StationName'],
+            snippet:document['Description'],
+            onTap: () {
+              _onMarkerTapped(document['ChargingStation'], document['Description'],document['Latitude'], document['Longitude']);
+            },
+          ),
+          icon: markerIcon,
+          // icon: await MarkerIcon.downloadResizePictureCircle(
+          //     'assets/image2.png',
+          //     size: 40,
+          //     addBorder: true,
+          //     borderColor: Colors.white,
+          //     borderSize: 15
+          // ),
+        ),
+      );// Add more fields as needed
+      print(_otherMarkers);
+    }
+  }
+
+  @override
+  void initState() {
+    // onStartApp();
+    getCurrentLocation();
+    createCustomMarkerIcon('assets/chargePartnersLogo.png', Colors.blue).then((customIcon) {
+      _otherMarkers = [
+        Marker(
+          markerId: const MarkerId("Lakshmi Complex"),
+          position: lakshmicomplex,
+          onTap: () {
+            _customInfoWindowController.addInfoWindow!(
+              GestureDetector(
+                onTap: () {
+                  _onMarkerTapped(
+                      'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
+                },
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.green[700],
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.account_circle,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                            Text(
+                              "Lakshmi complex",
+                              style: TextStyle(color: Colors.black),
+                            ),
+                            Text(
+                              "Charging station",
+                              style: TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                        width: double.infinity,
+                        height: double.infinity,
+                      ),
+                    ),
+                    Triangle.isosceles(
+                      edge: Edge.BOTTOM,
+                      child: Container(
+                        color: Colors.green[700],
+                        width: 20.0,
+                        height: 10.0,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              lakshmicomplex,
+            );
+          },
+          icon: customIcon, // Use the customIcon here
+        ),
+      ];
+      setState(() {});
+    });
+
+    super.initState();
+  }
+
 
 
   _onMarkerTapped(
@@ -392,8 +464,351 @@ class _Map2State extends State<Map2> {
     return;
   }
 
+  // onStartApp() async {
+  //   final now = DateTime.now();
+  //   String greeting = ''; // Default greeting
+  //
+  //   if (now.hour >= 3 && now.hour < 12) {
+  //     greeting = 'Good morning';
+  //   } else if (now.hour >= 12 && now.hour < 16) {
+  //     greeting = 'Good afternoon';
+  //   } else if (now.hour >= 17 && now.hour < 21) {
+  //     greeting = 'Good evening';
+  //   } else {
+  //     greeting = 'Good night';
+  //   }
+  //   OverlayLoadingProgress.start(context, barrierDismissible: false);
+  //   SlidingUpPanel(
+  //     onPanelClosed: (){
+  //       setState(() {
+  //         min_height_sliding = 0;
+  //       });
+  //     },
+  //     minHeight: min_height_sliding, // Minimum height of the panel
+  //     panel: Column(
+  //       // mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         Container( //for that scrollable showing
+  //           width: 40,
+  //           height: 5,
+  //           margin: EdgeInsets.symmetric(vertical: 10),
+  //           decoration: BoxDecoration(
+  //             color: Colors.grey,
+  //             borderRadius: BorderRadius.circular(2.5),
+  //           ),
+  //         ),
+  //         Text(
+  //           '$greeting, Krupa.',
+  //           style: TextStyle(
+  //               color: GlobalColors.BottomNavIcon,
+  //               fontWeight: FontWeight.bold,
+  //               fontSize: 20),
+  //           textAlign: TextAlign.left,
+  //         ),
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 30.0),
+  //           child: TextField(
+  //             controller: _searchController,
+  //             decoration: InputDecoration(
+  //               hintText: 'Charging stations',
+  //               filled: true,
+  //               fillColor: Colors
+  //                   .white, // Set the background color of the TextField
+  //               border: OutlineInputBorder(
+  //                 borderSide: BorderSide.none, // Remove border
+  //                 borderRadius: BorderRadius.circular(
+  //                     18), // Add border radius
+  //               ),
+  //               prefixIcon: IconButton(
+  //                 onPressed: _onSearchIconPressed,
+  //                 icon: Icon(Icons.search, size: 23),
+  //               ),
+  //               suffixIcon: IconButton(
+  //                 onPressed: () {},
+  //                 icon: Icon(Custom.equalizer, size: 18),
+  //               ),
+  //             ),
+  //           ),
+  //         ),
+  //         Padding(
+  //           padding: const EdgeInsets.symmetric(horizontal: 30.0),
+  //           child: Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceAround,
+  //             children: [
+  //               Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   CircleAvatar(
+  //                     backgroundColor: Colors.transparent,
+  //                     child: IconButton(
+  //                       onPressed: () {},
+  //                       icon: Icon(Icons.charging_station_sharp,
+  //                           size: 28),
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "Find",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                   Text(
+  //                     "Charger",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                 ],
+  //               ),
+  //               Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   GestureDetector(
+  //                     onTap: () {
+  //                       Navigator.push(
+  //                           context,
+  //                           MaterialPageRoute(
+  //                             builder: (context) => AddStationDetails(),
+  //                           ));
+  //                     },
+  //                     child: CircleAvatar(
+  //                       backgroundColor: Colors.transparent,
+  //                       child: IconButton(
+  //                         icon: Icon(Icons.add_location_alt_outlined, size: 28),
+  //                         onPressed: () {},
+  //                       ),
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "Add",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                   Text(
+  //                     "Charger",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                 ],
+  //               ),
+  //               Column(
+  //                 mainAxisAlignment: MainAxisAlignment.center,
+  //                 children: [
+  //                   CircleAvatar(
+  //                     backgroundColor: Colors.transparent,
+  //                     child: IconButton(
+  //                       onPressed: () {},
+  //                       icon:
+  //                       Icon(Icons.route_outlined, size: 28),
+  //                     ),
+  //                   ),
+  //                   Text(
+  //                     "Quick",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                   Text(
+  //                     "Routes",
+  //                     style: TextStyle(fontSize: 12),
+  //                   ),
+  //                 ],
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //         Divider(
+  //           color: Colors.black,
+  //           height: 23,
+  //           thickness: 2,
+  //           indent: 25,
+  //           endIndent: 25,
+  //         ),
+  //         Container(
+  //           child: Column(
+  //             children: [
+  //               Text("Popular Community",style: TextStyle(fontSize: 24),),
+  //               Text("Coming soon...")
+  //             ],
+  //           ),
+  //         ),
+  //         Divider(
+  //           color: Colors.black,
+  //           height: 23,
+  //           thickness: 2,
+  //           indent: 25,
+  //           endIndent: 25,
+  //         ),
+  //         Container(
+  //           child: Column(
+  //             children: [
+  //               Text("Latest updates",style: TextStyle(fontSize: 24),),
+  //               Text("Coming soon...")
+  //             ],
+  //           ),
+  //         )
+  //       ],
+  //     ),
+  //     collapsed: Container(
+  //       decoration: BoxDecoration(
+  //         color: Colors.white,
+  //         borderRadius: BorderRadius.only(
+  //           topLeft: Radius.circular(24),
+  //           topRight: Radius.circular(24),
+  //         ),
+  //       ),
+  //       child: Center(
+  //         child: Column(
+  //           // mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Container(
+  //               width: 40,
+  //               height: 5,
+  //               margin: EdgeInsets.symmetric(vertical: 10),
+  //               decoration: BoxDecoration(
+  //                 color: Colors.grey,
+  //                 borderRadius: BorderRadius.circular(2.5),
+  //               ),
+  //             ),
+  //             Text(
+  //               '$greeting, Krupa.',
+  //               style: TextStyle(
+  //                   color: GlobalColors.BottomNavIcon,
+  //                   fontWeight: FontWeight.bold,
+  //                   fontSize: 20),
+  //               textAlign: TextAlign.left,
+  //             ),
+  //             Padding(
+  //               padding:
+  //               const EdgeInsets.symmetric(horizontal: 30.0),
+  //               child: TextField(
+  //                 controller: _searchController,
+  //                 decoration: InputDecoration(
+  //                   hintText: 'Charging stations',
+  //                   filled: true,
+  //                   fillColor: Colors
+  //                       .white, // Set the background color of the TextField
+  //                   border: OutlineInputBorder(
+  //                     borderSide:
+  //                     BorderSide.none, // Remove border
+  //                     borderRadius: BorderRadius.circular(
+  //                         18), // Add border radius
+  //                   ),
+  //                   prefixIcon: IconButton(
+  //                     onPressed: _onSearchIconPressed,
+  //                     icon: Icon(Icons.search, size: 23),
+  //                   ),
+  //                   suffixIcon: IconButton(
+  //                     onPressed: () {},
+  //                     icon: Icon(Custom.equalizer, size: 18),
+  //                   ),
+  //                 ),
+  //               ),
+  //             ),
+  //             Padding(
+  //               padding:
+  //               const EdgeInsets.symmetric(horizontal: 30.0),
+  //               child: Row(
+  //                 mainAxisAlignment:
+  //                 MainAxisAlignment.spaceAround,
+  //                 children: [
+  //                   Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       CircleAvatar(
+  //                         backgroundColor: Colors.transparent,
+  //                         child: IconButton(
+  //                           onPressed: () {},
+  //                           icon: Icon(
+  //                               Icons.charging_station_sharp,
+  //                               size: 28),
+  //                         ),
+  //                       ),
+  //                       Text(
+  //                         "Find",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                       Text(
+  //                         "Charger",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       GestureDetector(
+  //                         onTap: () {
+  //                           Navigator.push(
+  //                               context,
+  //                               MaterialPageRoute(
+  //                                 builder: (context) => AddStationDetails(),
+  //                               ));
+  //                         },
+  //                         child: CircleAvatar(
+  //                           backgroundColor: Colors.transparent,
+  //                           child: IconButton(
+  //                             icon: Icon(Icons.add_location_alt_outlined, size: 28),
+  //                             onPressed: () {},
+  //                           ),
+  //                         ),
+  //                       ),
+  //                       Text(
+  //                         "Add",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                       Text(
+  //                         "Charger",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                   Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       CircleAvatar(
+  //                         backgroundColor: Colors.transparent,
+  //                         child: IconButton(
+  //                           onPressed: () {},
+  //                           icon: Icon(Icons.route_outlined,
+  //                               size: 28),
+  //                         ),
+  //                       ),
+  //                       Text(
+  //                         "Quick",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                       Text(
+  //                         "Routes",
+  //                         style: TextStyle(fontSize: 12),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             Divider(
+  //               color: Colors.black,
+  //               height: 23,
+  //               thickness: 2,
+  //               indent: 25,
+  //               endIndent: 25,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //     borderRadius: BorderRadius.only(
+  //       topLeft: Radius.circular(24),
+  //       topRight: Radius.circular(24),
+  //     ),
+  //   );
+  //    await Future.delayed(const Duration(seconds: 5));
+  //
+  //   OverlayLoadingProgress.stop();
+  // }
+
   @override
   Widget build(BuildContext context) {
+    final locationData = Provider.of<ProviderClass>(context);
+    if(currentLocation!=null){
+      setState(() {
+        locationData.currentLocationFetched=LatLng(currentLocation!.latitude!,
+            currentLocation!.longitude!);
+      });
+    }
     final now = DateTime.now();
     String greeting = ''; // Default greeting
 
@@ -464,6 +879,7 @@ class _Map2State extends State<Map2> {
     ];
 
     return WillPopScope(
+
       onWillPop: () async {
         final shouldPop = await showDialog<bool>(
           context: context,
@@ -609,7 +1025,26 @@ class _Map2State extends State<Map2> {
                         },
                       )
                   ),
-                   SlidingUpPanel(
+                  Positioned(
+                    bottom: 75,
+                    right: 15,
+                    child: CircleAvatar(
+                      backgroundColor: Colors.green[700],
+                      radius: 28,
+                      child: IconButton(
+                        onPressed: (){
+                         Navigator.push(
+                             context,
+                             MaterialPageRoute(builder: (context)=> AddStation())
+                         );
+                        },
+
+                        icon: Icon(Icons.add_location_alt_outlined),
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                  SlidingUpPanel(
                     onPanelClosed: (){
                       setState(() {
                         min_height_sliding = 0;
@@ -690,13 +1125,20 @@ class _Map2State extends State<Map2> {
                               Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  CircleAvatar(
-                                    backgroundColor: Colors.transparent,
-                                    child: IconButton(
-                                      onPressed: () {},
-                                      icon: Icon(
-                                          Icons.add_location_alt_outlined,
-                                          size: 28),
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => AddStationDetails(),
+                                          ));
+                                    },
+                                    child: CircleAvatar(
+                                      backgroundColor: Colors.transparent,
+                                      child: IconButton(
+                                        icon: Icon(Icons.add_location_alt_outlined, size: 28),
+                                        onPressed: () {},
+                                      ),
                                     ),
                                   ),
                                   Text(
@@ -853,13 +1295,20 @@ class _Map2State extends State<Map2> {
                                   Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      CircleAvatar(
-                                        backgroundColor: Colors.transparent,
-                                        child: IconButton(
-                                          onPressed: () {},
-                                          icon: Icon(
-                                              Icons.add_location_alt_outlined,
-                                              size: 28),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) => AddStationDetails(),
+                                              ));
+                                        },
+                                        child: CircleAvatar(
+                                          backgroundColor: Colors.transparent,
+                                          child: IconButton(
+                                            icon: Icon(Icons.add_location_alt_outlined, size: 28),
+                                            onPressed: () {},
+                                          ),
                                         ),
                                       ),
                                       Text(
@@ -911,6 +1360,7 @@ class _Map2State extends State<Map2> {
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
+
                   ),
                   CustomInfoWindow(
                     controller: _customInfoWindowController,

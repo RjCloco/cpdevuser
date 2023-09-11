@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class ProviderClass extends ChangeNotifier {
    String vehicleType='two wheeler';
@@ -7,6 +8,7 @@ class ProviderClass extends ChangeNotifier {
    int first = 0;
    int second = 1;
    int third = 2;
+   LatLng currentLocationFetched=LatLng(0,0);
 
    void swapWithFirst(int tappedIndex) {
       if (tappedIndex == second || tappedIndex == third) {
