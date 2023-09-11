@@ -14,7 +14,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:location/location.dart';
-import 'package:overlay_loading_progress/overlay_loading_progress.dart';
 import 'package:provider/provider.dart';
 import 'add_station.dart';
 import 'add_station_details.dart';
@@ -32,16 +31,11 @@ class Map2 extends StatefulWidget {
 
 class _Map2State extends State<Map2> {
   Completer<GoogleMapController> _controller = Completer();
-  CustomInfoWindowController _customInfoWindowController =
-      CustomInfoWindowController();
+  CustomInfoWindowController _customInfoWindowController = CustomInfoWindowController();
 
-  double min_height_sliding=240;
+  double min_height_sliding = 240;
   bool isPanelVisible = true;
-  static const LatLng funmall = LatLng(11.0247, 77.0106); //Fun mall
-  static const LatLng lakshmicomplex =
-      LatLng(11.0169, 76.9655); //lakshmi complex
-  static const LatLng racecourse = LatLng(10.9991, 76.9773);
-  static const LatLng prozone = LatLng(11.0548, 76.9941);
+
 
   LocationData? currentLocation;
 
@@ -55,7 +49,7 @@ class _Map2State extends State<Map2> {
     });
   }
 
-  late List<Marker> _otherMarkers;
+  List<Marker> _otherMarkers=[];
 
   BitmapDescriptor markerIcon = BitmapDescriptor.defaultMarker;
 
@@ -66,7 +60,8 @@ class _Map2State extends State<Map2> {
     final recorder = PictureRecorder();
     final canvas = Canvas(
       recorder,
-      Rect.fromPoints(Offset(0.0, 0.0), Offset(width.toDouble(), height.toDouble())),
+      Rect.fromPoints(
+          Offset(0.0, 0.0), Offset(width.toDouble(), height.toDouble())),
     );
 
     // Draw a circle shape with a border
@@ -106,27 +101,11 @@ class _Map2State extends State<Map2> {
 
     return BitmapDescriptor.fromBytes(imageDataBytes!.buffer.asUint8List());
   }
-  //
-  // void addCustomMarker(GoogleMapController controller, LatLng position, String iconImage, Color borderColor) {
-  //   createCustomMarkerIcon(iconImage, borderColor).then((customIcon) {
-  //     final marker = Marker(
-  //       markerId: MarkerId('custom_marker_${_otherMarkers.length}'),
-  //       position: position,
-  //       icon: customIcon,
-  //       onTap: () {
-  //         _onMarkerTapped('Custom Marker', 'Charging station', position.latitude, position.longitude);
-  //       },
-  //     );
-  //
-  //     setState(() {
-  //       _otherMarkers.add(marker);
-  //     });
-  //   });
-  // }
 
   addCustomIcon() async {
     BitmapDescriptor.fromAssetImage(
-            const ImageConfiguration(size: Size(5.5, 5.5)), 'assets/chargePartnersLogo.png')
+            const ImageConfiguration(size: Size(5.5, 5.5)),
+            'assets/chargePartnersLogo.png')
         .then((icon) {
       setState(() {
         markerIcon = icon;
@@ -134,7 +113,8 @@ class _Map2State extends State<Map2> {
       // markerIcon = icon;
     });
 
-    final Uint8List markIcons = await getImages('assets/chargePartnersLogo.png', 150);
+    final Uint8List markIcons =
+        await getImages('assets/chargePartnersLogo.png', 150);
   }
 
   Future<Uint8List> getImages(String path, int width) async {
@@ -241,80 +221,16 @@ class _Map2State extends State<Map2> {
     super.dispose();
   }
 
-  // @override
-  // void initState() {
-  //   getCurrentLocation();
-  //   addCustomIcon().then((_) {
-  //     _otherMarkers = [
-  //       Marker(
-  //         markerId: const MarkerId("Lakshmi Complex"),
-  //         position: lakshmicomplex,
-  //         onTap: () {
-  //           _customInfoWindowController.addInfoWindow!(
-  //             GestureDetector(
-  //               onTap: () {
-  //                 _onMarkerTapped(
-  //                     'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
-  //               },
-  //               child: Column(
-  //                 children: [
-  //                   Expanded(
-  //                     child: Container(
-  //                       decoration: BoxDecoration(
-  //                         color: Colors.green[700],
-  //                         borderRadius: BorderRadius.circular(4),
-  //                       ),
-  //                       child: Column(
-  //                         mainAxisAlignment: MainAxisAlignment.center,
-  //                         children: [
-  //                           Icon(
-  //                             Icons.account_circle,
-  //                             color: Colors.white,
-  //                             size: 30,
-  //                           ),
-  //                           Text(
-  //                             "Lakshmi complex",
-  //                             style: TextStyle(color: Colors.black),
-  //                           ),
-  //                           Text(
-  //                             "Charging station",
-  //                             style: TextStyle(color: Colors.white),
-  //                           )
-  //                         ],
-  //                       ),
-  //                       width: double.infinity,
-  //                       height: double.infinity,
-  //                     ),
-  //                   ),
-  //                   Triangle.isosceles(
-  //                     edge: Edge.BOTTOM,
-  //                     child: Container(
-  //                       color: Colors.green[700],
-  //                       width: 20.0,
-  //                       height: 10.0,
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             lakshmicomplex,
-  //           );
-  //         },
-  //         icon: markerIcon,
-  //       ),
-  //     ];
-  //     setState(() {});
-  //   });
-  //
-  //   super.initState();
-  // }
-
   Future<List<DocumentSnapshot>> fetchData() async {
     // Get a reference to the 'StationManagement' collection
-    CollectionReference stationCollection = FirebaseFirestore.instance.collection('StationManagement');
+    CollectionReference stationCollection =
+        FirebaseFirestore.instance.collection('StationManagement');
 
     try {
-      QuerySnapshot querySnapshot = await stationCollection.where('ActiveStatus', isEqualTo: true).get();
+      QuerySnapshot querySnapshot =
+          await stationCollection.where('ActiveStatus', isEqualTo: true).get();
+      print("Queryshnapshot returned list : ${querySnapshot}");
+
       return querySnapshot.docs;
     } catch (error) {
       // Handle any errors that occur during the data fetch
@@ -323,131 +239,77 @@ class _Map2State extends State<Map2> {
     }
   }
 
-
-
-  Future<void> DBAddStation()async {
-    String collectionName = 'StationManagement'; // Replace with your desired collection name
-    final CollectionReference collectionRef = FirebaseFirestore.instance.collection(collectionName);
-    final DocumentSnapshot docSnapshot = await collectionRef.doc('Lakshmi Mills').get();
-    await collectionRef.doc('Lakshmi Mills').set({
-      'ActiveStatus': true,
-      'Address': {
-        'City': 'Coimbatore',
-        'State':'Tamil Nadu',
-        'PinCode':641062,
-      },
-      'CreatedAt':  DateTime.now(),
-      'Latitude':11.0169,
-      'Longitude':76.9655,
-      'StationName': 'Lakshmi Mills',
-      'Description': 'Lakshmi complex'
-      // Add other fields if required
-
-    });
-
-  }
-
   Future<void>  AddStationdata(List<DocumentSnapshot<Object?>> stationData) async {
+
+    final customIcon = await createCustomMarkerIcon(
+      'assets/chargePartnersLogo.png',
+      Colors.blue,
+    );
 
     for (var document in stationData) {
       _otherMarkers.add(
         Marker(
-          markerId:MarkerId(document['StationName']),
-          position: LatLng(document['Latitude'],document['Longitude']),
-          infoWindow: InfoWindow(
-            title: document['StationName'],
-            snippet:document['Description'],
+            markerId:MarkerId(document['StationName']),
+            position: LatLng(document['Latitude'],document['Longitude']),
             onTap: () {
-              _onMarkerTapped(document['ChargingStation'], document['Description'],document['Latitude'], document['Longitude']);
+              _customInfoWindowController.addInfoWindow!(
+                GestureDetector(
+                  onTap: () {
+                    _onMarkerTapped(
+                        document['StationName'], document['Description'],document['Latitude'],document['Longitude']);
+                  },
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Colors.green[700],
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.account_circle,
+                                color: Colors.white,
+                                size: 30,
+                              ),
+                              Text(
+                                document['StationName'],
+                                style: TextStyle(color: Colors.black),
+                              ),
+                              Text(
+                                document['Description'],
+                                style: TextStyle(color: Colors.white),
+                              )
+                            ],
+                          ),
+                          width: double.infinity,
+                          height: double.infinity,
+                        ),
+                      ),
+                      Triangle.isosceles(
+                        edge: Edge.BOTTOM,
+                        child: Container(
+                          color: Colors.green[700],
+                          width: 20.0,
+                          height: 10.0,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                LatLng(document['Latitude'],document['Longitude']),
+              );
             },
-          ),
-          icon: markerIcon,
-          // icon: await MarkerIcon.downloadResizePictureCircle(
-          //     'assets/image2.png',
-          //     size: 40,
-          //     addBorder: true,
-          //     borderColor: Colors.white,
-          //     borderSize: 15
-          // ),
+            icon:customIcon
         ),
       );// Add more fields as needed
-      print(_otherMarkers);
+      //print(_otherMarkers);
     }
   }
 
-  @override
-  void initState() {
-    // onStartApp();
-    getCurrentLocation();
-    createCustomMarkerIcon('assets/chargePartnersLogo.png', Colors.blue).then((customIcon) {
-      _otherMarkers = [
-        Marker(
-          markerId: const MarkerId("Lakshmi Complex"),
-          position: lakshmicomplex,
-          onTap: () {
-            _customInfoWindowController.addInfoWindow!(
-              GestureDetector(
-                onTap: () {
-                  _onMarkerTapped(
-                      'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
-                },
-                child: Column(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.green[700],
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.account_circle,
-                              color: Colors.white,
-                              size: 30,
-                            ),
-                            Text(
-                              "Lakshmi complex",
-                              style: TextStyle(color: Colors.black),
-                            ),
-                            Text(
-                              "Charging station",
-                              style: TextStyle(color: Colors.white),
-                            )
-                          ],
-                        ),
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
-                    ),
-                    Triangle.isosceles(
-                      edge: Edge.BOTTOM,
-                      child: Container(
-                        color: Colors.green[700],
-                        width: 20.0,
-                        height: 10.0,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              lakshmicomplex,
-            );
-          },
-          icon: customIcon, // Use the customIcon here
-        ),
-      ];
-      setState(() {});
-    });
-
-    super.initState();
-  }
-
-
-
-  _onMarkerTapped(
-      String name, String snippet, double latitude, double longitude) {
+  _onMarkerTapped(String name, String snippet, double latitude, double longitude) {
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -457,358 +319,16 @@ class _Map2State extends State<Map2> {
     );
   }
 
-  Future getData() async {
-    await Future.delayed(
-      const Duration(seconds: 1),
-    );
-    return;
+  @override
+  void initState() {
+    getCurrentLocation();
+    super.initState();
   }
-
-  // onStartApp() async {
-  //   final now = DateTime.now();
-  //   String greeting = ''; // Default greeting
-  //
-  //   if (now.hour >= 3 && now.hour < 12) {
-  //     greeting = 'Good morning';
-  //   } else if (now.hour >= 12 && now.hour < 16) {
-  //     greeting = 'Good afternoon';
-  //   } else if (now.hour >= 17 && now.hour < 21) {
-  //     greeting = 'Good evening';
-  //   } else {
-  //     greeting = 'Good night';
-  //   }
-  //   OverlayLoadingProgress.start(context, barrierDismissible: false);
-  //   SlidingUpPanel(
-  //     onPanelClosed: (){
-  //       setState(() {
-  //         min_height_sliding = 0;
-  //       });
-  //     },
-  //     minHeight: min_height_sliding, // Minimum height of the panel
-  //     panel: Column(
-  //       // mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         Container( //for that scrollable showing
-  //           width: 40,
-  //           height: 5,
-  //           margin: EdgeInsets.symmetric(vertical: 10),
-  //           decoration: BoxDecoration(
-  //             color: Colors.grey,
-  //             borderRadius: BorderRadius.circular(2.5),
-  //           ),
-  //         ),
-  //         Text(
-  //           '$greeting, Krupa.',
-  //           style: TextStyle(
-  //               color: GlobalColors.BottomNavIcon,
-  //               fontWeight: FontWeight.bold,
-  //               fontSize: 20),
-  //           textAlign: TextAlign.left,
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(horizontal: 30.0),
-  //           child: TextField(
-  //             controller: _searchController,
-  //             decoration: InputDecoration(
-  //               hintText: 'Charging stations',
-  //               filled: true,
-  //               fillColor: Colors
-  //                   .white, // Set the background color of the TextField
-  //               border: OutlineInputBorder(
-  //                 borderSide: BorderSide.none, // Remove border
-  //                 borderRadius: BorderRadius.circular(
-  //                     18), // Add border radius
-  //               ),
-  //               prefixIcon: IconButton(
-  //                 onPressed: _onSearchIconPressed,
-  //                 icon: Icon(Icons.search, size: 23),
-  //               ),
-  //               suffixIcon: IconButton(
-  //                 onPressed: () {},
-  //                 icon: Icon(Custom.equalizer, size: 18),
-  //               ),
-  //             ),
-  //           ),
-  //         ),
-  //         Padding(
-  //           padding: const EdgeInsets.symmetric(horizontal: 30.0),
-  //           child: Row(
-  //             mainAxisAlignment: MainAxisAlignment.spaceAround,
-  //             children: [
-  //               Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     backgroundColor: Colors.transparent,
-  //                     child: IconButton(
-  //                       onPressed: () {},
-  //                       icon: Icon(Icons.charging_station_sharp,
-  //                           size: 28),
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "Find",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                   Text(
-  //                     "Charger",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                 ],
-  //               ),
-  //               Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   GestureDetector(
-  //                     onTap: () {
-  //                       Navigator.push(
-  //                           context,
-  //                           MaterialPageRoute(
-  //                             builder: (context) => AddStationDetails(),
-  //                           ));
-  //                     },
-  //                     child: CircleAvatar(
-  //                       backgroundColor: Colors.transparent,
-  //                       child: IconButton(
-  //                         icon: Icon(Icons.add_location_alt_outlined, size: 28),
-  //                         onPressed: () {},
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "Add",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                   Text(
-  //                     "Charger",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                 ],
-  //               ),
-  //               Column(
-  //                 mainAxisAlignment: MainAxisAlignment.center,
-  //                 children: [
-  //                   CircleAvatar(
-  //                     backgroundColor: Colors.transparent,
-  //                     child: IconButton(
-  //                       onPressed: () {},
-  //                       icon:
-  //                       Icon(Icons.route_outlined, size: 28),
-  //                     ),
-  //                   ),
-  //                   Text(
-  //                     "Quick",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                   Text(
-  //                     "Routes",
-  //                     style: TextStyle(fontSize: 12),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //         Divider(
-  //           color: Colors.black,
-  //           height: 23,
-  //           thickness: 2,
-  //           indent: 25,
-  //           endIndent: 25,
-  //         ),
-  //         Container(
-  //           child: Column(
-  //             children: [
-  //               Text("Popular Community",style: TextStyle(fontSize: 24),),
-  //               Text("Coming soon...")
-  //             ],
-  //           ),
-  //         ),
-  //         Divider(
-  //           color: Colors.black,
-  //           height: 23,
-  //           thickness: 2,
-  //           indent: 25,
-  //           endIndent: 25,
-  //         ),
-  //         Container(
-  //           child: Column(
-  //             children: [
-  //               Text("Latest updates",style: TextStyle(fontSize: 24),),
-  //               Text("Coming soon...")
-  //             ],
-  //           ),
-  //         )
-  //       ],
-  //     ),
-  //     collapsed: Container(
-  //       decoration: BoxDecoration(
-  //         color: Colors.white,
-  //         borderRadius: BorderRadius.only(
-  //           topLeft: Radius.circular(24),
-  //           topRight: Radius.circular(24),
-  //         ),
-  //       ),
-  //       child: Center(
-  //         child: Column(
-  //           // mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             Container(
-  //               width: 40,
-  //               height: 5,
-  //               margin: EdgeInsets.symmetric(vertical: 10),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.grey,
-  //                 borderRadius: BorderRadius.circular(2.5),
-  //               ),
-  //             ),
-  //             Text(
-  //               '$greeting, Krupa.',
-  //               style: TextStyle(
-  //                   color: GlobalColors.BottomNavIcon,
-  //                   fontWeight: FontWeight.bold,
-  //                   fontSize: 20),
-  //               textAlign: TextAlign.left,
-  //             ),
-  //             Padding(
-  //               padding:
-  //               const EdgeInsets.symmetric(horizontal: 30.0),
-  //               child: TextField(
-  //                 controller: _searchController,
-  //                 decoration: InputDecoration(
-  //                   hintText: 'Charging stations',
-  //                   filled: true,
-  //                   fillColor: Colors
-  //                       .white, // Set the background color of the TextField
-  //                   border: OutlineInputBorder(
-  //                     borderSide:
-  //                     BorderSide.none, // Remove border
-  //                     borderRadius: BorderRadius.circular(
-  //                         18), // Add border radius
-  //                   ),
-  //                   prefixIcon: IconButton(
-  //                     onPressed: _onSearchIconPressed,
-  //                     icon: Icon(Icons.search, size: 23),
-  //                   ),
-  //                   suffixIcon: IconButton(
-  //                     onPressed: () {},
-  //                     icon: Icon(Custom.equalizer, size: 18),
-  //                   ),
-  //                 ),
-  //               ),
-  //             ),
-  //             Padding(
-  //               padding:
-  //               const EdgeInsets.symmetric(horizontal: 30.0),
-  //               child: Row(
-  //                 mainAxisAlignment:
-  //                 MainAxisAlignment.spaceAround,
-  //                 children: [
-  //                   Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: [
-  //                       CircleAvatar(
-  //                         backgroundColor: Colors.transparent,
-  //                         child: IconButton(
-  //                           onPressed: () {},
-  //                           icon: Icon(
-  //                               Icons.charging_station_sharp,
-  //                               size: 28),
-  //                         ),
-  //                       ),
-  //                       Text(
-  //                         "Find",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                       Text(
-  //                         "Charger",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: [
-  //                       GestureDetector(
-  //                         onTap: () {
-  //                           Navigator.push(
-  //                               context,
-  //                               MaterialPageRoute(
-  //                                 builder: (context) => AddStationDetails(),
-  //                               ));
-  //                         },
-  //                         child: CircleAvatar(
-  //                           backgroundColor: Colors.transparent,
-  //                           child: IconButton(
-  //                             icon: Icon(Icons.add_location_alt_outlined, size: 28),
-  //                             onPressed: () {},
-  //                           ),
-  //                         ),
-  //                       ),
-  //                       Text(
-  //                         "Add",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                       Text(
-  //                         "Charger",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                   Column(
-  //                     mainAxisAlignment: MainAxisAlignment.center,
-  //                     children: [
-  //                       CircleAvatar(
-  //                         backgroundColor: Colors.transparent,
-  //                         child: IconButton(
-  //                           onPressed: () {},
-  //                           icon: Icon(Icons.route_outlined,
-  //                               size: 28),
-  //                         ),
-  //                       ),
-  //                       Text(
-  //                         "Quick",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                       Text(
-  //                         "Routes",
-  //                         style: TextStyle(fontSize: 12),
-  //                       ),
-  //                     ],
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             Divider(
-  //               color: Colors.black,
-  //               height: 23,
-  //               thickness: 2,
-  //               indent: 25,
-  //               endIndent: 25,
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ),
-  //     borderRadius: BorderRadius.only(
-  //       topLeft: Radius.circular(24),
-  //       topRight: Radius.circular(24),
-  //     ),
-  //   );
-  //    await Future.delayed(const Duration(seconds: 5));
-  //
-  //   OverlayLoadingProgress.stop();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    final locationData = Provider.of<ProviderClass>(context);
-    if(currentLocation!=null){
-      setState(() {
-        locationData.currentLocationFetched=LatLng(currentLocation!.latitude!,
-            currentLocation!.longitude!);
-      });
-    }
+
+    List<DocumentSnapshot<Object?>> stationData=[];
     final now = DateTime.now();
     String greeting = ''; // Default greeting
 
@@ -827,59 +347,109 @@ class _Map2State extends State<Map2> {
         icon: Custom.motorcycle,
         vehicle_name: 'two wheeler',
         selectedIndex: 0,
+        Color1: GlobalColors.twowheeler1,
+        Color2: GlobalColors.twowheeler2,
       ),
       VehicleIcon(
         icon: Custom.car_side,
         vehicle_name: 'four wheeler',
         selectedIndex: 1,
+        Color1: GlobalColors.fourwheeler1,
+        Color2: GlobalColors.fourwheeler2,
       ),
       VehicleIcon(
         icon: Custom.truck,
         vehicle_name: 'heavy vehicle',
         selectedIndex: 2,
+        Color1: GlobalColors.heavy1,
+        Color2: GlobalColors.heavy2,
       )
     ];
 
     List<Widget> filterIconList = [
       FiltersIcon(
         filterName: 'Fast CCS2',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.fast_ccs2_1, GlobalColors.fast_ccs2_1]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'Slow type 2',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.slow_type2_1, GlobalColors.slow_type2_2]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'Slow 15A',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.slow_15a_1, GlobalColors.slow_15a_2]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'Fast DC-001',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [
+                  GlobalColors.fast_dc_001_1,
+                  GlobalColors.fast_dc_001_2
+                ]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'fast CHAde',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.fast_CHAde_1, GlobalColors.fast_CHAde_2]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'Slow IEC AC',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.slowIEcAC_1, GlobalColors.slowIEcAC_2]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
       FiltersIcon(
         filterName: 'Fast type 6',
-        initialColor: Colors.grey,
-        onTapColor: Colors.redAccent,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+                colors: [GlobalColors.fasttype6_1, GlobalColors.fasttype6_2]),
+            borderRadius: BorderRadius.all(
+              Radius.elliptical(20, 25),
+            )),
       ),
     ];
 
     return WillPopScope(
-
       onWillPop: () async {
         final shouldPop = await showDialog<bool>(
           context: context,
@@ -955,39 +525,58 @@ class _Map2State extends State<Map2> {
             : Stack(
                 children: [
                   Positioned.fill(
-                    // child: ConstrainedBox(
-                    //   constraints: BoxConstraints(
-                    //     maxWidth: double.infinity, // Adjust this as needed
-                    //     maxHeight: double.infinity, // Adjust this as needed
-                    //   ),
-                    child: GoogleMap(
-                      onMapCreated: (GoogleMapController controller) async {
-                        _customInfoWindowController.googleMapController =
-                            controller;
-                        _controller.complete(controller);
+                    child:   FutureBuilder<List<DocumentSnapshot>>(
+                      future: fetchData(),
+                      builder: (BuildContext context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator());
+                        } else if (snapshot.hasError) {
+                          return Center(child: Text('Error: ${snapshot.error}'));
+                        } else {
+                          stationData = snapshot.data!;
+                          print('Other markers: $_otherMarkers');
+                          return FutureBuilder<void>(
+                            future: AddStationdata(stationData),
+                            builder: (BuildContext context, AsyncSnapshot<void> addStationSnapshot) {
+                              if (addStationSnapshot.connectionState == ConnectionState.waiting) {
+                                return Center(child: CircularProgressIndicator());
+                              } else if (addStationSnapshot.hasError) {
+                                return Center(child: Text('Error: ${addStationSnapshot.error}'));
+                              } else {
+                                return GoogleMap(
+                                  onMapCreated: (GoogleMapController controller) async {
+                                    _customInfoWindowController.googleMapController =
+                                        controller;
+                                    _controller.complete(controller);
+                                  },
+                                  initialCameraPosition: CameraPosition(
+                                    target: LatLng(currentLocation!.latitude!,
+                                        currentLocation!.longitude!),
+                                    zoom: 15,
+                                  ),
+                                  onTap: (position) {
+                                    _customInfoWindowController.hideInfoWindow!();
+                                  },
+                                  onCameraMove: (position) {
+                                    _customInfoWindowController.onCameraMove!();
+                                  },
+                                  myLocationEnabled: true,
+                                  myLocationButtonEnabled: false,
+                                  markers: Set<Marker>.from(_otherMarkers),
+                                );
+                              }
+                            },
+                          );
+                        }
                       },
-                      initialCameraPosition: CameraPosition(
-                        target: LatLng(currentLocation!.latitude!,
-                            currentLocation!.longitude!),
-                        zoom: 15,
-                      ),
-                      onTap: (position) {
-                        _customInfoWindowController.hideInfoWindow!();
-                      },
-                      onCameraMove: (position) {
-                        _customInfoWindowController.onCameraMove!();
-                      },
-                      myLocationEnabled: true,
-                      myLocationButtonEnabled: false,
-                      markers: Set<Marker>.from(_otherMarkers),
                     ),
                     // ),
                   ),
+
                   Positioned(
                       top: 3,
                       left: 20,
-                      child:
-                      Consumer<ProviderClass>(
+                      child: Consumer<ProviderClass>(
                         builder: (context, provider, _) {
                           return Row(
                             children: [
@@ -998,14 +587,16 @@ class _Map2State extends State<Map2> {
                                     children: [
                                       IconList[provider.first],
                                       Container(
-                                        height: 50,
-                                        width: 300,
+                                        height: 45,
+                                        width: 280,
                                         child: ListView(
                                           scrollDirection: Axis.horizontal,
-                                          children: filterIconList.map((iconWidget) {
+                                          children:
+                                              filterIconList.map((iconWidget) {
                                             return Padding(
                                               padding:
-                                              const EdgeInsets.symmetric(horizontal: 10),
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 10),
                                               child: iconWidget,
                                             );
                                           }).toList(),
@@ -1023,8 +614,7 @@ class _Map2State extends State<Map2> {
                             ],
                           );
                         },
-                      )
-                  ),
+                      )),
                   Positioned(
                     bottom: 75,
                     right: 15,
@@ -1032,29 +622,29 @@ class _Map2State extends State<Map2> {
                       backgroundColor: Colors.green[700],
                       radius: 28,
                       child: IconButton(
-                        onPressed: (){
-                         Navigator.push(
-                             context,
-                             MaterialPageRoute(builder: (context)=> AddStation())
-                         );
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => AddStation()));
                         },
-
                         icon: Icon(Icons.add_location_alt_outlined),
                         color: Colors.white,
                       ),
                     ),
                   ),
                   SlidingUpPanel(
-                    onPanelClosed: (){
+                    onPanelClosed: () {
                       setState(() {
                         min_height_sliding = 0;
                       });
                     },
-                    minHeight: min_height_sliding, // Minimum height of the panel
+                    minHeight:
+                        min_height_sliding, // Minimum height of the panel
                     panel: Column(
-                      // mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container( //for that scrollable showing
+                        Container(
+                          //for that scrollable showing
                           width: 40,
                           height: 5,
                           margin: EdgeInsets.symmetric(vertical: 10),
@@ -1130,13 +720,16 @@ class _Map2State extends State<Map2> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => AddStationDetails(),
+                                            builder: (context) =>
+                                                AddStationDetails(),
                                           ));
                                     },
                                     child: CircleAvatar(
                                       backgroundColor: Colors.transparent,
                                       child: IconButton(
-                                        icon: Icon(Icons.add_location_alt_outlined, size: 28),
+                                        icon: Icon(
+                                            Icons.add_location_alt_outlined,
+                                            size: 28),
                                         onPressed: () {},
                                       ),
                                     ),
@@ -1185,7 +778,10 @@ class _Map2State extends State<Map2> {
                         Container(
                           child: Column(
                             children: [
-                              Text("Popular Community",style: TextStyle(fontSize: 24),),
+                              Text(
+                                "Popular Community",
+                                style: TextStyle(fontSize: 24),
+                              ),
                               Text("Coming soon...")
                             ],
                           ),
@@ -1200,7 +796,10 @@ class _Map2State extends State<Map2> {
                         Container(
                           child: Column(
                             children: [
-                              Text("Latest updates",style: TextStyle(fontSize: 24),),
+                              Text(
+                                "Latest updates",
+                                style: TextStyle(fontSize: 24),
+                              ),
                               Text("Coming soon...")
                             ],
                           ),
@@ -1300,13 +899,16 @@ class _Map2State extends State<Map2> {
                                           Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                builder: (context) => AddStationDetails(),
+                                                builder: (context) =>
+                                                    AddStationDetails(),
                                               ));
                                         },
                                         child: CircleAvatar(
                                           backgroundColor: Colors.transparent,
                                           child: IconButton(
-                                            icon: Icon(Icons.add_location_alt_outlined, size: 28),
+                                            icon: Icon(
+                                                Icons.add_location_alt_outlined,
+                                                size: 28),
                                             onPressed: () {},
                                           ),
                                         ),
@@ -1360,7 +962,6 @@ class _Map2State extends State<Map2> {
                       topLeft: Radius.circular(24),
                       topRight: Radius.circular(24),
                     ),
-
                   ),
                   CustomInfoWindow(
                     controller: _customInfoWindowController,
@@ -1373,31 +974,6 @@ class _Map2State extends State<Map2> {
     );
   }
 }
-
-// scrollable list
-// Container(
-//   height: 50,
-//   width: 300,
-//   child: ListView(
-//     scrollDirection: Axis.horizontal,
-//     children: filterIconList.map((iconWidget) {
-//       return Padding(
-//         padding:
-//         const EdgeInsets.symmetric(horizontal: 10),
-//         child: iconWidget,
-//       );
-//     }).toList(),
-//   ),
-// ),
-
-//list of items
-// IconList.map((iconWidget) {
-//   return Padding(
-//     padding:
-//         const EdgeInsets.symmetric(vertical: 10.0),
-//     child: iconWidget,
-//   );
-// }).toList(),
 
 class MarkerDetailsPage extends StatelessWidget {
   final String title;
@@ -1447,6 +1023,97 @@ class MarkerDetailsPage extends StatelessWidget {
   }
 }
 
+
+// fetchData();
+// createCustomMarkerIcon('assets/chargePartnersLogo.png', Colors.blue)
+//     .then((customIcon) {
+//   _otherMarkers = [
+//     Marker(
+//       markerId: const MarkerId("Lakshmi Complex"),
+//       position: lakshmicomplex,
+//       onTap: () {
+//         _customInfoWindowController.addInfoWindow!(
+//           GestureDetector(
+//             onTap: () {
+//               _onMarkerTapped(
+//                   'Lakshmi Complex', 'Charging station', 11.0169, 76.9655);
+//             },
+//             child: Column(
+//               children: [
+//                 Expanded(
+//                   child: Container(
+//                     decoration: BoxDecoration(
+//                       color: Colors.green[700],
+//                       borderRadius: BorderRadius.circular(4),
+//                     ),
+//                     child: Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Icon(
+//                           Icons.account_circle,
+//                           color: Colors.white,
+//                           size: 30,
+//                         ),
+//                         Text(
+//                           "Lakshmi complex",
+//                           style: TextStyle(color: Colors.black),
+//                         ),
+//                         Text(
+//                           "Charging station",
+//                           style: TextStyle(color: Colors.white),
+//                         )
+//                       ],
+//                     ),
+//                     width: double.infinity,
+//                     height: double.infinity,
+//                   ),
+//                 ),
+//                 Triangle.isosceles(
+//                   edge: Edge.BOTTOM,
+//                   child: Container(
+//                     color: Colors.green[700],
+//                     width: 20.0,
+//                     height: 10.0,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ),
+//           lakshmicomplex,
+//         );
+//       },
+//       icon: customIcon, // Use the customIcon here
+//     ),
+//   ];
+//   setState(() {});
+// });
+
+//
+// scrollable list
+// Container(
+// height: 50,
+// width: 300,
+// child: ListView(
+// scrollDirection: Axis.horizontal,
+// children: filterIconList.map((iconWidget) {
+// return Padding(
+// padding:
+// const EdgeInsets.symmetric(horizontal: 10),
+// child: iconWidget,
+// );
+// }).toList(),
+// ),
+// ),
+//
+// list of items
+// IconList.map((iconWidget) {
+// return Padding(
+// padding:
+// const EdgeInsets.symmetric(vertical: 10.0),
+// child: iconWidget,
+// );
+// }).toList(),
+
 // final IconList=[
 //   twoWheeler(),
 //   fourWheeler(),
@@ -1473,8 +1140,6 @@ class MarkerDetailsPage extends StatelessWidget {
 //     vehicle_name: 'heavy vehicle',
 //   )
 // ];
-
-
 
 // child: Row(
 //   children: [
@@ -1568,7 +1233,6 @@ class MarkerDetailsPage extends StatelessWidget {
 //     },
 //   ),
 // ];
-
 
 // SingleChildScrollView(
 //   scrollDirection: Axis.horizontal,

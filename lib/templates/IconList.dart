@@ -6,7 +6,9 @@ class VehicleIcon extends StatefulWidget {
   final IconData icon;
   final vehicle_name;
   final int selectedIndex;
-  const VehicleIcon({Key? key, required this.icon, required this.vehicle_name,  required this.selectedIndex}) : super(key: key);
+  final Color Color1;
+  final Color Color2;
+  const VehicleIcon({Key? key, required this.icon, required this.vehicle_name,  required this.selectedIndex,required this.Color1, required this.Color2}) : super(key: key);
 
   @override
   State<VehicleIcon> createState() => _VehicleIconState();
@@ -19,8 +21,8 @@ class _VehicleIconState extends State<VehicleIcon>  {
 
     final isFirstIcon = vehicletypeProvider.first == widget.selectedIndex;
 
-    final iconColor = isFirstIcon ? Colors.white : Colors.black;
-    final backgroundColor = isFirstIcon ? Colors.black : Colors.white;
+    // final iconColor = Colors.black;
+    // final backgroundColor = isFirstIcon ? Colors.black : Colors.white;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -29,12 +31,17 @@ class _VehicleIconState extends State<VehicleIcon>  {
         });
       },
         child: Container(
-          height: 45,
-          width: 45,
-          color: backgroundColor,
+          width: 58,
+          height: 37,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.elliptical(20, 25)),
+              gradient: LinearGradient(
+                begin: Alignment.centerLeft, end: Alignment.centerRight,
+                colors: [widget.Color1, widget.Color2], )
+          ),
           child: Icon(
             widget.icon,
-            color: iconColor, // Icon color
+            color: Colors.black, // Icon color
           ),
 
         ),

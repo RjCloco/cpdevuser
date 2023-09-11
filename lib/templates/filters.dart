@@ -5,9 +5,8 @@ import '../Provider.dart';
 
 class FiltersIcon extends StatefulWidget {
   String filterName;
-  final Color initialColor;
-  final Color onTapColor;
-  FiltersIcon({Key? key, required this.filterName, required this.initialColor, required this.onTapColor}) : super(key: key);
+  final decoration;
+  FiltersIcon({Key? key, required this.filterName, required this.decoration}) : super(key: key);
 
   @override
   State<FiltersIcon> createState() => _FiltersIconState();
@@ -25,16 +24,21 @@ class _FiltersIconState extends State<FiltersIcon> {
             print("Vehicle type : ${vehicletypeProvider.vehicleType}, Filter type: ${widget.filterName}");
           });
         },
-    child: Card(
-        child: Container(
-          height: 55,
-          width: 55,
-          color: colorState ? widget.initialColor : widget.onTapColor,
+    child: Container(
+      decoration: colorState ? BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.all(Radius.elliptical(20, 25),
+        )
+      ): widget.decoration,
+      child: Padding(
+        padding: const EdgeInsets.only(top: 0,bottom: 0,left: 8,right: 8),
+        child: Center(
           child: Text(
-            widget.filterName,style: TextStyle(fontSize: 12),
+            widget.filterName,style: TextStyle(fontSize: 8,fontWeight: FontWeight.w600,),
           ),
         ),
       ),
+    ),
     );
   }
 }
