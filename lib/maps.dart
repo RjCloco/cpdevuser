@@ -221,42 +221,120 @@ class _Map2State extends State<Map2> {
     super.dispose();
   }
 
-  Future<List<DocumentSnapshot>> fetchData() async {
+  // Future<List<DocumentSnapshot>> fetchData() async {
+  //   // Get a reference to the 'StationManagement' collection
+  //   CollectionReference stationCollection =
+  //       FirebaseFirestore.instance.collection('StationManagement');
+  //
+  //   try {
+  //     QuerySnapshot querySnapshot =
+  //         await stationCollection.where('ActiveStatus', isEqualTo: true).get();
+  //     print("Queryshnapshot returned list : ${querySnapshot}");
+  //
+  //     return querySnapshot.docs;
+  //   } catch (error) {
+  //     // Handle any errors that occur during the data fetch
+  //     print('Error fetching data: $error');
+  //     return [];
+  //   }
+  // }
+  //
+  // Future<void>  AddStationdata(List<DocumentSnapshot<Object?>> stationData) async {
+  //
+  //   final customIcon = await createCustomMarkerIcon(
+  //     'assets/chargePartnersLogo.png',
+  //     Colors.blue,
+  //   );
+  //
+  //   for (var document in stationData) {
+  //     _otherMarkers.add(
+  //       Marker(
+  //           markerId:MarkerId(document['StationName']),
+  //           position: LatLng(document['Latitude'],document['Longitude']),
+  //           onTap: () {
+  //             _customInfoWindowController.addInfoWindow!(
+  //               GestureDetector(
+  //                 onTap: () {
+  //                   _onMarkerTapped(
+  //                       document['StationName'], document['Description'],document['Latitude'],document['Longitude']);
+  //                 },
+  //                 child: Column(
+  //                   children: [
+  //                     Expanded(
+  //                       child: Container(
+  //                         decoration: BoxDecoration(
+  //                           color: Colors.green[700],
+  //                           borderRadius: BorderRadius.circular(4),
+  //                         ),
+  //                         child: Column(
+  //                           mainAxisAlignment: MainAxisAlignment.center,
+  //                           children: [
+  //                             Icon(
+  //                               Icons.account_circle,
+  //                               color: Colors.white,
+  //                               size: 30,
+  //                             ),
+  //                             Text(
+  //                               document['StationName'],
+  //                               style: TextStyle(color: Colors.black),
+  //                             ),
+  //                             Text(
+  //                               document['Description'],
+  //                               style: TextStyle(color: Colors.white),
+  //                             )
+  //                           ],
+  //                         ),
+  //                         width: double.infinity,
+  //                         height: double.infinity,
+  //                       ),
+  //                     ),
+  //                     Triangle.isosceles(
+  //                       edge: Edge.BOTTOM,
+  //                       child: Container(
+  //                         color: Colors.green[700],
+  //                         width: 20.0,
+  //                         height: 10.0,
+  //                       ),
+  //                     ),
+  //                   ],
+  //                 ),
+  //               ),
+  //               LatLng(document['Latitude'],document['Longitude']),
+  //             );
+  //           },
+  //           icon:customIcon
+  //       ),
+  //     );// Add more fields as needed
+  //     //print(_otherMarkers);
+  //   }
+  // }
+
+
+  Future<void> fetchDataAndAddMarkers() async {
     // Get a reference to the 'StationManagement' collection
     CollectionReference stationCollection =
-        FirebaseFirestore.instance.collection('StationManagement');
-
-    try {
-      QuerySnapshot querySnapshot =
-          await stationCollection.where('ActiveStatus', isEqualTo: true).get();
-      print("Queryshnapshot returned list : ${querySnapshot}");
-
-      return querySnapshot.docs;
-    } catch (error) {
-      // Handle any errors that occur during the data fetch
-      print('Error fetching data: $error');
-      return [];
-    }
-  }
-
-  Future<void>  AddStationdata(List<DocumentSnapshot<Object?>> stationData) async {
+    FirebaseFirestore.instance.collection('StationManagement');
 
     final customIcon = await createCustomMarkerIcon(
       'assets/chargePartnersLogo.png',
       Colors.blue,
     );
 
-    for (var document in stationData) {
-      _otherMarkers.add(
-        Marker(
-            markerId:MarkerId(document['StationName']),
-            position: LatLng(document['Latitude'],document['Longitude']),
+    try {
+      QuerySnapshot querySnapshot =
+      await stationCollection.where('ActiveStatus', isEqualTo: true).get();
+      print("Queryshnapshot returned list: ${querySnapshot}");
+
+      for (var document in querySnapshot.docs) {
+        _otherMarkers.add(
+          Marker(
+            markerId: MarkerId(document['StationName']),
+            position: LatLng(document['Latitude'], document['Longitude']),
             onTap: () {
               _customInfoWindowController.addInfoWindow!(
                 GestureDetector(
                   onTap: () {
-                    _onMarkerTapped(
-                        document['StationName'], document['Description'],document['Latitude'],document['Longitude']);
+                    _onMarkerTapped(document['StationName'], document['Description'], document['Latitude'], document['Longitude']);
                   },
                   child: Column(
                     children: [
@@ -281,7 +359,7 @@ class _Map2State extends State<Map2> {
                               Text(
                                 document['Description'],
                                 style: TextStyle(color: Colors.white),
-                              )
+                              ),
                             ],
                           ),
                           width: double.infinity,
@@ -299,13 +377,17 @@ class _Map2State extends State<Map2> {
                     ],
                   ),
                 ),
-                LatLng(document['Latitude'],document['Longitude']),
+                LatLng(document['Latitude'], document['Longitude']),
               );
             },
-            icon:customIcon
-        ),
-      );// Add more fields as needed
-      //print(_otherMarkers);
+            icon: customIcon,
+          ),
+        );
+      }
+      setState(() {});
+    } catch (error) {
+      // Handle any errors that occur during the data fetch
+      print('Error fetching data and adding markers: $error');
     }
   }
 
@@ -322,6 +404,7 @@ class _Map2State extends State<Map2> {
   @override
   void initState() {
     getCurrentLocation();
+    fetchDataAndAddMarkers();
     super.initState();
   }
 
@@ -525,52 +608,61 @@ class _Map2State extends State<Map2> {
             : Stack(
                 children: [
                   Positioned.fill(
-                    child:   FutureBuilder<List<DocumentSnapshot>>(
-                      future: fetchData(),
-                      builder: (BuildContext context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return Center(child: CircularProgressIndicator());
-                        } else if (snapshot.hasError) {
-                          return Center(child: Text('Error: ${snapshot.error}'));
-                        } else {
-                          stationData = snapshot.data!;
-                          print('Other markers: $_otherMarkers');
-                          return FutureBuilder<void>(
-                            future: AddStationdata(stationData),
-                            builder: (BuildContext context, AsyncSnapshot<void> addStationSnapshot) {
-                              if (addStationSnapshot.connectionState == ConnectionState.waiting) {
-                                return Center(child: CircularProgressIndicator());
-                              } else if (addStationSnapshot.hasError) {
-                                return Center(child: Text('Error: ${addStationSnapshot.error}'));
-                              } else {
-                                return GoogleMap(
-                                  onMapCreated: (GoogleMapController controller) async {
-                                    _customInfoWindowController.googleMapController =
-                                        controller;
-                                    _controller.complete(controller);
-                                  },
-                                  initialCameraPosition: CameraPosition(
-                                    target: LatLng(currentLocation!.latitude!,
-                                        currentLocation!.longitude!),
-                                    zoom: 15,
-                                  ),
-                                  onTap: (position) {
-                                    _customInfoWindowController.hideInfoWindow!();
-                                  },
-                                  onCameraMove: (position) {
-                                    _customInfoWindowController.onCameraMove!();
-                                  },
-                                  myLocationEnabled: true,
-                                  myLocationButtonEnabled: false,
-                                  markers: Set<Marker>.from(_otherMarkers),
-                                );
-                              }
-                            },
-                          );
-                        }
+                    child:
+                    GoogleMap(
+                      onMapCreated: (GoogleMapController controller) async {
+                        _customInfoWindowController.googleMapController =
+                            controller;
+                        _controller.complete(controller);
                       },
+                      initialCameraPosition: CameraPosition(
+                        target: LatLng(currentLocation!.latitude!,
+                            currentLocation!.longitude!),
+                        zoom: 15,
+                      ),
+                      onTap: (position) {
+                        _customInfoWindowController.hideInfoWindow!();
+                      },
+                      onCameraMove: (position) {
+                        _customInfoWindowController.onCameraMove!();
+                      },
+                      myLocationEnabled: true,
+                      myLocationButtonEnabled: false,
+                      markers: Set<Marker>.from(_otherMarkers),
                     ),
-                    // ),
+                    // FutureBuilder<void>(
+                    //         future: fetchDataAndAddMarkers(),
+                    //         builder: (BuildContext context, AsyncSnapshot<void> addStationSnapshot) {
+                    //           if (addStationSnapshot.connectionState == ConnectionState.waiting) {
+                    //             return Center(child: CircularProgressIndicator());
+                    //           } else if (addStationSnapshot.hasError) {
+                    //             return Center(child: Text('Error: ${addStationSnapshot.error}'));
+                    //           } else {
+                    //             return
+                    //               GoogleMap(
+                    //               onMapCreated: (GoogleMapController controller) async {
+                    //                 _customInfoWindowController.googleMapController =
+                    //                     controller;
+                    //                 _controller.complete(controller);
+                    //               },
+                    //               initialCameraPosition: CameraPosition(
+                    //                 target: LatLng(currentLocation!.latitude!,
+                    //                     currentLocation!.longitude!),
+                    //                 zoom: 15,
+                    //               ),
+                    //               onTap: (position) {
+                    //                 _customInfoWindowController.hideInfoWindow!();
+                    //               },
+                    //               onCameraMove: (position) {
+                    //                 _customInfoWindowController.onCameraMove!();
+                    //               },
+                    //               myLocationEnabled: true,
+                    //               myLocationButtonEnabled: false,
+                    //               markers: Set<Marker>.from(_otherMarkers),
+                    //             );
+                    //           }
+                    //         },
+                    //       )
                   ),
 
                   Positioned(
